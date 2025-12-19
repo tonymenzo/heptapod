@@ -1,0 +1,16 @@
+#------------------------------------------------------------
+# Example: pp_ttbar.cmnd
+# Minimal Pythia8 run card for generic ttbar events
+#------------------------------------------------------------
+
+# Beam setup
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 14000.0        # center-of-mass energy in GeV
+
+# Switch on gg fusion, qqbar -> ttbar
+Top:gg2ttbar = on
+Top:qqbar2ttbar = on
+
+# Switch on quiet mode
+Print:quiet = on

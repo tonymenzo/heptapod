@@ -1,0 +1,1700 @@
+M$ModelName = "SLQrules";
+
+(*
+FeynRules model file including all scalar LQ. It is based on the Physics Reports 641 (2016) 1-68. See Eqs. (1) and (2) of Phys. Rep. for notation. This model file is suitable for the leading order simulations only.
+*)
+
+M$Information = {Authors -> {"L. Schnell", "I. Dorsner", "D. A. Faroughy", "A. Greljo"},
+                                  Version -> "1.0",
+                                  Date    -> "04.05.2021",
+                                  Emails  -> {"luschnel@student.ethz.ch", "dorsner@fesb.hr"},
+                                  URLs    -> {"https://gitlab.com/lucschnell/SLQrules", "http://lqnlo.hepforge.org"}};
+
+M$InteractionOrderHierarchy = {
+  {QCD, 1},
+  {QED, 2},
+  {NP, 2}
+};
+
+(* Define range of the colour index *)
+IndexRange[ Index[Colour] ] = Range[3];
+
+(* Define range of the mass diagonalization matrices *)
+IndexRange[Index[Q13]] = Range[3];
+IndexRange[Index[Q23]] = Range[3];
+IndexRange[Index[Q43]] = Range[2];
+
+
+(******************************************)
+(******************************************)
+(*               Parameters               *)
+(******************************************)
+(******************************************)
+
+
+
+M$Parameters = {
+
+(**********************************)
+(* Scalar singlet S1 = (3,1,-1/3) *)
+(**********************************)
+
+(* S1 leptoquark mass *)
+m1 == {
+    ParameterType -> External,
+    BlockName     -> LQPARAM,
+    Value         -> 1000.0,
+    Description   -> "S1 mass"
+},
+
+(* S1 leptoquark Yukawa couplings *)
+Y1LL == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1LL,
+    	Value            -> {  Y1LL[1,1] -> 1.0, Y1LL[1,2] -> 0.0, Y1LL[1,3] -> 0.0,
+                      	     Y1LL[2,1] -> 0.0, Y1LL[2,2] -> 1.0, Y1LL[2,3] -> 0.0,
+                             Y1LL[3,1] -> 0.0, Y1LL[3,2] -> 0.0, Y1LL[3,3] -> 1.0},
+    	TeX              -> Superscript[Subscript[Y, "1"],LL],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "S1 leptoquark LL Yukawa coupling matrix"
+},
+
+Y1QLL == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1QLL,
+    	Value            -> {  Y1QLL[1,1] -> 1.0, Y1QLL[1,2] -> 0.0, Y1QLL[1,3] -> 0.0,
+                      	     Y1QLL[2,1] -> 0.0, Y1QLL[2,2] -> 1.0, Y1QLL[2,3] -> 0.0,
+                             Y1QLL[3,1] -> 0.0, Y1QLL[3,2] -> 0.0, Y1QLL[3,3] -> 1.0},
+    	TeX              -> Superscript[Subscript[Y, "1"],QLL],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "S1 leptoquark QLL Yukawa coupling matrix (symmetric)"
+},
+
+Y1RR == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1RR,
+    	Value            -> {  Y1RR[1,1] -> 1.0, Y1RR[1,2] -> 0.0, Y1RR[1,3] -> 0.0,
+                      	     Y1RR[2,1] -> 0.0, Y1RR[2,2] -> 1.0, Y1RR[2,3] -> 0.0,
+                             Y1RR[3,1] -> 0.0, Y1RR[3,2] -> 0.0, Y1RR[3,3] -> 1.0},
+    	TeX              -> Superscript[Subscript[Y, "1"],RR],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "S1 leptoquark RR Yukawa coupling matrix"
+},
+
+Y1QRR == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1QRR,
+    	Value            -> {  Y1QRR[1,1] -> 0.0, Y1QRR[1,2] -> -1.0, Y1QRR[1,3] -> -1.0,
+                      	     Y1QRR[2,1] -> 1.0, Y1QRR[2,2] -> 0.0, Y1QRR[2,3] -> -1.0,
+                             Y1QRR[3,1] -> 1.0, Y1QRR[3,2] -> 1.0, Y1QRR[3,3] -> 0.0},
+    	TeX              -> Superscript[Subscript[Y, "1"],QRR],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "S1 leptoquark QRR Yukawa coupling matrix (anti-symmetric)"
+},
+
+
+(***********************************)
+(* Scalar singlet S1~ = (3,1,-4/3) *)
+(***********************************)
+
+(* S1~ leptoquark mass *)
+m1t == {
+         ParameterType -> External,
+         BlockName     -> LQPARAM,
+         Value         -> 2000.0,
+         Description   -> "S1~ = S1tm43 mass"
+},
+
+(* S1~ leptoquark Yukawa couplings *)
+Y1tRR == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1tRR,
+    	Value            -> {Y1tRR[1,1] -> 1.0, Y1tRR[1,2] -> 0.0, Y1tRR[1,3] -> 0.0,
+                      	   Y1tRR[2,1] -> 0.0, Y1tRR[2,2] -> 1.0, Y1tRR[2,3] -> 0.0,
+                           Y1tRR[3,1] -> 0.0, Y1tRR[3,2] -> 0.0, Y1tRR[3,3] -> 1.0},
+    	TeX               -> Superscript[Subscript[Y, "1t"],RR],
+	    InteractionOrder  -> {NP, 1},
+    	Description       -> "S1~ leptoquark RR Yukawa coupling matrix"
+},
+
+Y1tQRR == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKS1tQRR,
+    	Value            -> {Y1tQRR[1,1] -> 1.0, Y1tQRR[1,2] -> 0.0, Y1tQRR[1,3] -> 0.0,
+                      	   Y1tQRR[2,1] -> 0.0, Y1tQRR[2,2] -> 1.0, Y1tQRR[2,3] -> 0.0,
+                           Y1tQRR[3,1] -> 0.0, Y1tQRR[3,2] -> 0.0, Y1tQRR[3,3] -> 1.0},
+    	TeX               -> Superscript[Subscript[Y, "1t"],QRR],
+	    InteractionOrder  -> {NP, 1},
+    	Description       -> "S1~ leptoquark QRR Yukawa coupling matrix"
+},
+
+(**********************************)
+(* Scalar doublet R2 = (3,2,-7/6) *)
+(**********************************)
+
+(* R2 leptoquark mass *)
+m2 == {
+        ParameterType -> External,
+        BlockName     -> LQPARAM,
+        Value         -> 3000.0,
+        Description   -> "R2 mass"
+},
+
+(* R2 leptoquark Yukawa couplings *)
+Y2RL == {
+ 	    ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKR2RL,
+    	Value            -> {  Y2RL[1,1] -> 1.0, Y2RL[1,2] -> 0.0, Y2RL[1,3] -> 0.0,
+                      	     Y2RL[2,1] -> 0.0, Y2RL[2,2] -> 1.0, Y2RL[2,3] -> 0.0,
+                             Y2RL[3,1] -> 0.0, Y2RL[3,2] -> 0.0, Y2RL[3,3] -> 1.0},
+    	TeX              -> Superscript[Subscript[Y, "2"],RL],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "R2 leptoquark RL Yukawa coupling matrix"
+},
+
+Y2LR == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKR2LR,
+    	Value            -> {  Y2LR[1,1] -> 1.0, Y2LR[1,2] -> 0.0, Y2LR[1,3] -> 0.0,
+                      	     Y2LR[2,1] -> 0.0, Y2LR[2,2] -> 1.0, Y2LR[2,3] -> 0.0,
+                             Y2LR[3,1] -> 0.0, Y2LR[3,2] -> 0.0, Y2LR[3,3] -> 1.0},
+    	TeX               -> Superscript[Subscript[Y, "2"],LR],
+	    InteractionOrder  -> {NP, 1},
+    	Description       -> "R2 leptoquark LR Yukawa coupling matrix"
+},
+
+(***********************************)
+(* Scalar doublet R2~ = (3,2,-1/6) *)
+(***********************************)
+
+(* R2~ leptoquark mass *)
+m2t == {
+        ParameterType -> External,
+        BlockName     -> LQPARAM,
+        Value         -> 4000.0,
+        Description   -> "R2~ = R2t mass"
+},
+
+(* R2~ leptoquark Yukawa couplings *)
+Y2tRL == {
+    	ParameterType    -> External,
+	    ComplexParameter -> True,
+    	Indices          -> {Index[Generation], Index[Generation]},
+	    BlockName        -> YUKR2t,
+    	Value            -> {  Y2tRL[1,1] -> 1.0, Y2tRL[1,2] -> 0.0, Y2tRL[1,3] -> 0.0,
+                      	     Y2tRL[2,1] -> 0.0, Y2tRL[2,2] -> 1.0, Y2tRL[2,3] -> 0.0,
+                             Y2tRL[3,1] -> 0.0, Y2tRL[3,2] -> 0.0, Y2tRL[3,3] -> 1.0},
+    	TeX              -> Superscript[Subscript[Y, "2t"],RL],
+	    InteractionOrder -> {NP, 1},
+    	Description      -> "R2~ leptoquark RL Yukawa coupling matrix"
+},
+
+(**********************************)
+(* Scalar triplet S3 = (3,3,-1/3) *)
+(**********************************)
+
+(* S3 leptoquark mass *)
+m3 == {
+        ParameterType -> External,
+        BlockName     -> LQPARAM,
+        Value         -> 5000.0,
+        Description   -> "S3 mass"
+},
+
+(* S3 leptoquark Yukawa couplings *)
+Y3LL == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {Index[Generation], Index[Generation]},
+	      BlockName        -> YUKS3LL,
+    	  Value            -> {  Y3LL[1,1] -> 1.0, Y3LL[1,2] -> 0.0, Y3LL[1,3] -> 0.0,
+                      	       Y3LL[2,1] -> 0.0, Y3LL[2,2] -> 1.0, Y3LL[2,3] -> 0.0,
+                               Y3LL[3,1] -> 0.0, Y3LL[3,2] -> 0.0, Y3LL[3,3] -> 1.0},
+    	  TeX              -> Superscript[Subscript[Y, "3"],LL],
+	      InteractionOrder -> {NP, 1},
+	      ComplexParameter -> True,
+    	  Description      -> "S3 leptoquark LL Yukawa coupling matrix"
+},
+
+Y3QLL == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {Index[Generation], Index[Generation]},
+	      BlockName        -> YUKS3QLL,
+    	  Value            -> {  Y3QLL[1,1] -> 0.0, Y3QLL[1,2] -> -1.0, Y3QLL[1,3] -> -1.0,
+                      	       Y3QLL[2,1] -> 1.0, Y3QLL[2,2] -> 0.0, Y3QLL[2,3] -> -1.0,
+                               Y3QLL[3,1] -> 1.0, Y3QLL[3,2] -> 1.0, Y3QLL[3,3] -> 0.0},
+    	  TeX              -> Superscript[Subscript[Y, "3"],LL],
+	      InteractionOrder -> {NP, 1},
+	      ComplexParameter -> True,
+    	  Description      -> "S3 leptoquark QLL Yukawa coupling matrix (anti-symmetric)"
+},
+
+
+
+(******************************)
+(*  LQ Bilinear Interactions  *)
+(******************************)
+A12t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> A12t,
+        TeX              -> Subscript[A, "12t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 1},
+    	  Description      -> "R2t-S1 scalar leptoquark mixing coupling"
+},
+
+A2t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> A2t3,
+        TeX              -> Subscript[A, "2t3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 1},
+    	  Description      -> "S3-R2t scalar leptoquark mixing coupling"
+},
+
+Y22t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y22t,
+        TeX              -> Subscript[Y, "22t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S2-R2t scalar leptoquark mixing coupling"
+},
+
+Y1t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1t3,
+        TeX              -> Subscript[Y, "1t3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S3-S1t scalar leptoquark mixing coupling"
+},
+
+Y13 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y13,
+        TeX              -> Subscript[Y, "13"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S3-S1 scalar leptoquark mixing coupling"
+},
+
+Y22 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y22,
+        TeX              -> Subscript[Y, "22"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "R2-R2 scalar leptoquark mixing coupling"
+},
+
+Y2t2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y2t2t,
+        TeX              -> Subscript[Y, "2t2t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "R2t-R2t scalar leptoquark mixing coupling"
+},
+
+Y33 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y33,
+        TeX              -> Subscript[Y, "33"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S3-S3 scalar leptoquark mixing coupling"
+},
+
+Y1 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1,
+        TeX              -> Subscript[Y, "1"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S1 scalar leptoquark Higgs coupling"
+},
+Y1t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1t,
+        TeX              -> Subscript[Y, "1t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S1t scalar leptoquark Higgs coupling"
+},
+
+Y2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y2,
+        TeX              -> Subscript[Y, "2"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "R2 scalar leptoquark Higgs coupling"
+},
+Y2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y2t,
+        TeX              -> Subscript[Y, "2t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "R2t scalar leptoquark Higgs coupling"
+},
+Y3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y3,
+        TeX              -> Subscript[Y, "3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {QED, 2},
+    	  Description      -> "S3 scalar leptoquark Higgs coupling"
+},
+
+(* Mass Diagonalization Matrices *)
+W13mat == {
+        ParameterType    -> Internal,
+        Unitary          -> True,
+    	  Indices          -> {Index[Q13], Index[Q13]},
+	      BlockName        -> W13mat,
+    	  Value            -> {  W13mat[1,1] -> 1 - vev^2 Abs[A12t]^2/(4(m1^2-m2t^2)^2), W13mat[1,2] -> vev Conjugate[A12t] / (Sqrt[2] (m1^2 - m2t^2)), W13mat[1,3] -> vev^2 (Y13 * (m1^2 - m2t^2) + Conjugate[A12t] A2t3)/(2(m1^2-m3^2)(m1^2-m2t^2)),
+                      	       W13mat[2,1] -> -vev A12t / (Sqrt[2](m1^2 - m2t^2)), W13mat[2,2] -> 1 - vev^2/4*(Abs[A12t]^2/(m1^2-m2t^2)^2 + Abs[A2t3]^2/(m3^2-m2t^2)^2), W13mat[2,3] -> -vev A2t3 /(Sqrt[2] m3^2-m2t^2),
+                               W13mat[3,1] -> -vev^2(Conjugate[Y13](m3^2-m2t^2) + A12t Conjugate[A2t3])/(2 (m1^2 - m3^2) (m3^2-m2t^2)), W13mat[3,2] -> vev Conjugate[A2t3]/(Sqrt[2] (m3^2-m2t^2)), W13mat[3,3] -> 1 - vev^2 Abs[A2t3]^2 /(4(m3^2-m2t^2)^2)},
+    	  TeX              -> Superscript[W, -1/3],
+        InteractionOrder -> {NP, 0},
+    	  Description      -> "Mass eigenstates diagonalization matrix (Q = -1/3)"
+},
+
+W23mat == {
+        ParameterType    -> Internal,
+        Unitary          -> True,
+    	  Indices          -> {Index[Q23], Index[Q23]},
+	      BlockName        -> W23mat,
+    	  Value            -> {W23mat[1,1] -> 1.0, W23mat[1,2] -> vev^2 Y22t / (2 (m2^2-m2t^2)), W23mat[1,3] -> 0.0,
+                      	    W23mat[2,1] -> -vev Conjugate[Y22t] / (2 (m2^2 - m2t^2)), W23mat[2,2] -> 1.0 - vev^2 Abs[A2t3]^2 / (2 (m3^2 - m2t^2)^2), W23mat[2,3] -> -vev A2t3 / (m2t^2-m3^2),
+                            W23mat[3,1] -> 0.0, W23mat[3,2] -> vev * Conjugate[A2t3]/(m2t^2-m3^2), W23mat[3,3] -> 1.0 - vev^2 Abs[A2t3]^2/(2(m3^2-m2t^2)^2)},
+    	  TeX              -> Superscript[W, +2/3],
+        InteractionOrder -> {NP, 0},
+    	  Description      -> "Mass eigenstates diagonalization matrix (Q = +2/3)"
+},
+
+W43mat == {
+        ParameterType    -> Internal,
+        Unitary          -> True,
+    	  Indices          -> {Index[Q43], Index[Q43]},
+	      BlockName        -> W43mat,
+    	  Value            -> {W43mat[1,1] -> 1.0, W43mat[1,2] -> vev^2*Conjugate[Y1t3]/(Sqrt[2] (m1t^2-m3^2)),
+                      	    W43mat[2,1] -> -vev^2 Y1t3 /(Sqrt[2] (m1t^2-m3^2)), W43mat[2,2] -> 1.0},
+    	  TeX              -> Superscript[W, -4/3],
+        InteractionOrder -> {NP, 0},
+    	  Description      -> "Mass eigenstates diagonalization matrix (Q = -4/3)"
+},
+
+(* Masses *)
+m1m13hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m1^2 + vev^2/2*(Y1 - Abs[A12t]^2/(m2t^2 - m1^2))],
+    Description   -> "S1m13 mass in hat basis"
+},
+
+m2tm13hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m2t^2 + vev^2/2*(Y2t + Abs[A12t]^2/(m2t^2 - m1^2) + Abs[A2t3]^2/(m2t^2 - m3^2))],
+    Description   -> "S2tm13 mass in hat basis"
+},
+
+m3m13hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m3^2 + vev^2/2*(Y3 - Abs[A2t3]^2/(m2t^2 - m3^2))],
+    Description   -> "S3m13 mass in hat basis"
+},
+
+m2p23hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m2^2 + vev^2/2*Y2],
+    Description   -> "S2p23 mass in hat basis"
+},
+
+m2tp23hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m2t^2 + vev^2/2*(Y2t + Y2t2t + 2 Abs[A2t3]^2/(m2t^2 - m3^2))],
+    Description   -> "S2tp23 mass in hat basis"
+},
+
+m3p23hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m3^2 + vev^2/2*(Y3 + Y33 - 2 Abs[A2t3]^2/(m2t^2 - m3^2))],
+    Description   -> "S3p23 mass in hat basis"
+},
+
+m1tm43hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m1t^2 + vev^2/2*Y1t],
+    Description   -> "S1tm43 mass in hat basis"
+},
+
+m3m43hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m3^2 + vev^2/2*(Y3 - Y33)],
+    Description   -> "S3m43 mass in hat basis"
+},
+
+m2p53hat == {
+    ParameterType -> Internal,
+    BlockName     -> LQPARAM,
+    Value         -> Sqrt[m2^2 + vev^2/2*(Y2 + Y22)],
+    Description   -> "S2p53 mass in hat basis"
+},
+
+(* Widths *)
+W1m13hat == {
+   ParameterType -> Internal,
+   Value         -> (m1m13hat*(Sum[Abs[Y2tRL[j,i]*Conjugate[W13mat[1,2]]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Y1LL[i,j]*W13mat[1,1] - Y3LL[i,j]*W13mat[1,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[Y1RR[i,j]*W13mat[1,1]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[CKM[k,i]*Y1LL[k,j]*W13mat[1,1] + CKM[k,i]*Y1LL[k,j]*W13mat[1,3]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[i,k]*Conjugate[W13mat[1,1]] - CKM[k,j]*Y1LL[i,k]*Conjugate[W13mat[1,3]]]^2,{i,1,2},{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[i,j]*Conjugate[W13mat[1,1]]]^2,{i,1,2},{j,1,3}])
+                        + (Sum[Abs[Y1LL[i,3]*W13mat[1,1] - Y3LL[i,3]*W13mat[1,3]]^2,{i,1,3}]
+                          + Sum[Abs[Y1RR[i,3]*W13mat[1,1]]^2,{i,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[3,k]*Conjugate[W13mat[1,1]] - CKM[k,j]*Y1LL[3,k]*Conjugate[W13mat[1,3]]]^2,{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[3,j]*Conjugate[W13mat[1,1]]]^2,{j,1,3}])*(m1m13hat^2-ymt^2)^2/m1m13hat^3)/(16*Pi)
+},
+W2tm13hat == {
+   ParameterType -> Internal,
+   Value         -> (m2tm13hat*(Sum[Abs[Y2tRL[j,i]*Conjugate[W13mat[2,2]]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Y1LL[i,j]*W13mat[2,1] - Y3LL[i,j]*W13mat[2,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[Y1RR[i,j]*W13mat[2,1]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[CKM[k,i]*Y1LL[k,j]*W13mat[2,1] + CKM[k,i]*Y1LL[k,j]*W13mat[2,3]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[i,k]*Conjugate[W13mat[2,1]] - CKM[k,j]*Y1LL[i,k]*Conjugate[W13mat[2,3]]]^2,{i,1,2},{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[i,j]*Conjugate[W13mat[2,1]]]^2,{i,1,2},{j,1,3}])
+                        + (Sum[Abs[Y1LL[i,3]*W13mat[2,1] - Y3LL[i,3]*W13mat[2,3]]^2,{i,1,3}]
+                          + Sum[Abs[Y1RR[i,3]*W13mat[2,1]]^2,{i,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[3,k]*Conjugate[W13mat[2,1]] - CKM[k,j]*Y1LL[3,k]*Conjugate[W13mat[2,3]]]^2,{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[3,j]*Conjugate[W13mat[2,1]]]^2,{j,1,3}])*(m2tm13hat^2-ymt^2)^2/m2tm13hat^3)/(16*Pi)
+},
+W3m13hat == {
+   ParameterType -> Internal,
+   Value         -> (m3m13hat*(Sum[Abs[Y2tRL[j,i]*Conjugate[W13mat[3,2]]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Y1LL[i,j]*W13mat[3,1] - Y3LL[i,j]*W13mat[1,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[Y1RR[i,j]*W13mat[3,1]]^2,{i,1,3},{j,1,2}]
+                          + Sum[Abs[CKM[k,i]*Y1LL[k,j]*W13mat[3,1] + CKM[k,i]*Y1LL[k,j]*W13mat[3,3]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[i,k]*Conjugate[W13mat[3,1]] - CKM[k,j]*Y1LL[i,k]*Conjugate[W13mat[3,3]]]^2,{i,1,2},{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[i,j]*Conjugate[W13mat[3,1]]]^2,{i,1,2},{j,1,3}])
+                        + (Sum[Abs[Y1LL[i,3]*W13mat[1,1] - Y3LL[i,3]*W13mat[3,3]]^2,{i,1,3}]
+                          + Sum[Abs[Y1RR[i,3]*W13mat[3,1]]^2,{i,1,3}]
+                          + Sum[8*Abs[CKM[k,j]*Y1QLL[3,k]*Conjugate[W13mat[3,1]] - CKM[k,j]*Y1LL[3,k]*Conjugate[W13mat[3,3]]]^2,{j,1,3},{k,1,3}]
+                          + Sum[2*Abs[Y1QRR[3,j]*Conjugate[W13mat[3,1]]]^2,{j,1,3}])*(m3m13hat^2-ymt^2)^2/m3m13hat^3)/(16*Pi)
+},
+
+W2p23hat == {
+   ParameterType -> Internal,
+   Value         -> (m2p23hat*(Sum[Abs[CKM[k,i] Conjugate[Y2LR[k,j]]*W23mat[1,1]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[Abs[Conjugate[Y2tRL[i,j]]*W23mat[1,2]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Conjugate[Y2RL[i,j]]*W23mat[1,1]]^2,{i,1,2},{j,1,3}]
+                          + Sum[2*Abs[Y3LL[j,i]*W23mat[1,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[16*Abs[CKM[k,i] CKM[k,l] Y3QLL[k,l]*W23mat[1,3]]^2,{i,1,3},{j,1,3},{k,1,3},{l,1,3}])
+                        + (Sum[Abs[Conjugate[Y2RL[3,j]]*W23mat[1,1]]^2,{j,1,3}]
+                          + Sum[2*Abs[Y3LL[3,i]*W23mat[1,3]]^2,{i,1,3}])*(m2p23hat^2-ymt^2)^2/m2p23hat^3)/(16*Pi)
+},
+
+W2tp23hat == {
+   ParameterType -> Internal,
+   Value         -> (m2tp23hat*(Sum[Abs[CKM[k,i] Conjugate[Y2LR[k,j]]*W23mat[2,1]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[Abs[Conjugate[Y2tRL[i,j]]*W23mat[2,2]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Conjugate[Y2RL[i,j]]*W23mat[2,1]]^2,{i,1,2},{j,1,3}]
+                          + Sum[2*Abs[Y3LL[j,i]*W23mat[2,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[16*Abs[CKM[k,i] CKM[k,l] Y3QLL[k,l]*W23mat[2,3]]^2,{i,1,3},{j,1,3},{k,1,3},{l,1,3}])
+                        + (Sum[Abs[Conjugate[Y2RL[3,j]]*W23mat[2,1]]^2,{j,1,3}]
+                          + Sum[2*Abs[Y3LL[3,i]*W23mat[2,3]]^2,{i,1,3}])*(m2tp23hat^2-ymt^2)^2/m2tp23hat^3)/(16*Pi)
+},
+
+W3p23hat == {
+   ParameterType -> Internal,
+   Value         -> (m3p23hat*(Sum[Abs[CKM[k,i] Conjugate[Y2LR[k,j]]*W23mat[3,1]]^2,{i,1,3},{j,1,3},{k,1,3}]
+                          + Sum[Abs[Conjugate[Y2tRL[i,j]]*W23mat[3,2]]^2,{i,1,3},{j,1,3}]
+                          + Sum[Abs[Conjugate[Y2RL[i,j]]*W23mat[3,1]]^2,{i,1,2},{j,1,3}]
+                          + Sum[2*Abs[Y3LL[j,i]*W23mat[3,3]]^2,{i,1,3},{j,1,2}]
+                          + Sum[16*Abs[CKM[k,i] CKM[k,l] Y3QLL[k,l]*W23mat[3,3]]^2,{i,1,3},{j,1,3},{k,1,3},{l,1,3}])
+                        + (Sum[Abs[Conjugate[Y2RL[3,j]]*W23mat[3,1]]^2,{j,1,3}]
+                          + Sum[2*Abs[Y3LL[3,i]*W23mat[3,3]]^2,{i,1,3}])*(m3p23hat^2-ymt^2)^2/m3p23hat^3)/(16*Pi)
+},
+
+W1tm43hat == {
+   ParameterType -> Internal,
+   Value         -> (m1tm43hat*(Sum[Abs[Y1tRR[i,j]*W43mat[1,1]]^2,{i,1,3},{j,1,3}]
+                          + 2*Sum[Abs[CKM[k,i]*Y3LL[k,j]*W43mat[1,2]]^2,{i,1,3},{j,1,3}, {k,1,3}]
+                          + 8*Sum[Abs[Y1tQRR[i,j]*W43mat[1,1]]^2,{i,1,2},{j,1,2}]
+                          + 16*Sum[Abs[Y3QLL[i,j]*W43mat[1,2]]^2,{i,1,2},{j,1,2}])
+                        + (8*Sum[Abs[Y1tQRR[3,j]*W43mat[1,1]]^2,{j,1,2}]
+                          + 16*Sum[Abs[Y3QLL[3,j]*W43mat[1,2]]^2,{j,1,2}]
+                          + 8*Sum[Abs[Y1tQRR[i,3]*W43mat[1,1]]^2,{i,1,2}]
+                          + 16*Sum[Abs[Y3QLL[i,3]*W43mat[1,2]]^2,{i,1,2}])*(m1tm43hat^2-ymt^2)^2/m1tm43hat^3
+                        + (8*Abs[Y1tQRR[3,3]*W43mat[1,1]]^2
+                        + 16*Abs[Y3QLL[3,3]*W43mat[1,2]]^2)*(m1tm43hat^2-4*ymt^2)^2/m1tm43hat^3)/(16*Pi)
+},
+W3m43hat == {
+   ParameterType -> Internal,
+   Value         -> (m3m43hat*(Sum[Abs[Y1tRR[i,j]*W43mat[2,1]]^2,{i,1,3},{j,1,3}]
+                          + 2*Sum[Abs[CKM[k,i]*Y3LL[k,j]*W43mat[2,2]]^2,{i,1,3},{j,1,3}, {k,1,3}]
+                          + 8*Sum[Abs[Y1tQRR[i,j]*W43mat[2,1]]^2,{i,1,2},{j,1,2}]
+                          + 16*Sum[Abs[Y3QLL[i,j]*W43mat[2,2]]^2,{i,1,2},{j,1,2}])
+                        + (8*Sum[Abs[Y1tQRR[3,j]*W43mat[2,1]]^2,{j,1,2}]
+                          + 16*Sum[Abs[Y3QLL[3,j]*W43mat[2,2]]^2,{j,1,2}]
+                          + 8*Sum[Abs[Y1tQRR[i,3]*W43mat[2,1]]^2,{i,1,2}]
+                          + 16*Sum[Abs[Y3QLL[i,3]*W43mat[2,2]]^2,{i,1,2}])*(m3m43hat^2-ymt^2)^2/m3m43hat^3
+                        + (8*Abs[Y1tQRR[3,3]*W43mat[2,1]]^2
+                        + 16*Abs[Y3QLL[3,3]*W43mat[2,2]]^2)*(m3m43hat^2-4*ymt^2)^2/m3m43hat^3)/(16*Pi)
+},
+
+W2p53hat == {
+   ParameterType -> Internal,
+   Value         -> (m2p53hat*(Sum[Abs[Y2LR[i,j]]^2,{i,1,2},{j,1,3}]
+                          + Sum[Abs[Y2RL[i,j]]^2,{i,1,2},{j,1,3}])
+                        + (Sum[Abs[Y2LR[3,j]]^2,{j,1,3}]
+                          + Sum[Abs[Y2RL[3,j]]^2,{j,1,3}])*(m2p53hat^2-ymt^2)^2/m2p53hat^3)/(16*Pi)
+},
+
+(****************************)
+(*  LQ Triple Interactions  *)
+(****************************)
+
+A12t2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> A12t2t,
+        TeX              -> Subscript[A, "12t2t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2t-R2t scalar leptoquark coupling"
+},
+A1t22t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> A1t22t,
+        TeX              -> Subscript[A, "1t22t"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-R2-R2t scalar leptoquark coupling"
+},
+Y123 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y123,
+        TeX              -> Subscript[Y, "123"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2-S3 scalar leptoquark coupling"
+},
+Y11t2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y11t2,
+        TeX              -> Subscript[Y, "11t2"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1t-R2 scalar leptoquark coupling"
+},
+Y12t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y12t3,
+        TeX              -> Subscript[Y, "12t3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2t-S3 scalar leptoquark coupling"
+},
+Y1t23 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1t23,
+        TeX              -> Subscript[Y, "1t23"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-R2-S3 scalar leptoquark coupling"
+},
+Y233 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y223,
+        TeX              -> Subscript[Y, "233"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-S3 scalar leptoquark coupling"
+},
+Y2t33 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y2t23,
+        TeX              -> Subscript[Y, "2t33"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2-S3 scalar leptoquark coupling"
+},
+
+
+(*****************************)
+(*  LQ Quartic Interactions  *)
+(*****************************)
+
+Yo1 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1,
+        TeX              -> Superscript[Subscript[Y, "1"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-S1-S1 scalar leptoquark coupling"
+},
+Yo11t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo11t,
+        TeX              -> Superscript[Subscript[Y, "11t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-S1t-S1t scalar leptoquark coupling"
+},
+Yo11tprime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo11tprime,
+        TeX              -> Superscript[Subscript[Yp, "11t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-S1t-S1t scalar leptoquark coupling"
+},
+Yo12 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo12,
+        TeX              -> Superscript[Subscript[Y, "12"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-R2-R2 scalar leptoquark coupling"
+},
+Yo12prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo12prime,
+        TeX              -> Superscript[Subscript[Yp, "12"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-R2-R2 scalar leptoquark coupling"
+},
+Yo12t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo12t,
+        TeX              -> Superscript[Subscript[Y, "12t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-R2t-R2t scalar leptoquark coupling"
+},
+Yo12tprime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo12tprime,
+        TeX              -> Superscript[Subscript[Yp, "12t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-R2t-R2t scalar leptoquark coupling"
+},
+Yo13 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo13,
+        TeX              -> Superscript[Subscript[Y, "13"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-S3-S3 scalar leptoquark coupling"
+},
+Yo13prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo13prime,
+        TeX              -> Superscript[Subscript[Yp, "13"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1-S3-S3 scalar leptoquark coupling"
+},
+Yo1t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t,
+        TeX              -> Superscript[Subscript[Y, "1t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-S1t-S1t scalar leptoquark coupling"
+},
+Yo1t2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t2,
+        TeX              -> Superscript[Subscript[Y, "1t2"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-R2-R2 scalar leptoquark coupling"
+},
+Yo1t2prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t2prime,
+        TeX              -> Superscript[Subscript[Yp, "1t2"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-R2-R2 scalar leptoquark coupling"
+},
+Yo1t2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t2t,
+        TeX              -> Superscript[Subscript[Y, "1t2t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-R2t-R2t scalar leptoquark coupling"
+},
+Yo1t2tprime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t2tprime,
+        TeX              -> Superscript[Subscript[Yp, "1t2t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-R2t-R2t scalar leptoquark coupling"
+},
+Yo1t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t3,
+        TeX              -> Superscript[Subscript[Y, "1t3"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-S3-S3 scalar leptoquark coupling"
+},
+Yo1t3prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo1t3prime,
+        TeX              -> Superscript[Subscript[Yp, "1t3"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1t-S1t-S3-S3 scalar leptoquark coupling"
+},
+Yo2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo2,
+        TeX              -> Superscript[Subscript[Y, "2"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2-R2 scalar leptoquark coupling"
+},
+Yo22t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo22t,
+        TeX              -> Superscript[Subscript[Y, "22t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2t-R2t scalar leptoquark coupling"
+},
+Yo22tprime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo22tprime,
+        TeX              -> Superscript[Subscript[Yp, "22t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2t-R2t scalar leptoquark coupling"
+},
+Yo23 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo23,
+        TeX              -> Superscript[Subscript[Y, "23"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-S3-S3 scalar leptoquark coupling"
+},
+Yo23prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo23prime,
+        TeX              -> Superscript[Subscript[Yp, "23"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-S3-S3 scalar leptoquark coupling"
+},
+Yo2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo2t,
+        TeX              -> Superscript[Subscript[Y, "2t"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-R2t-R2t scalar leptoquark coupling"
+},
+Yo2t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo2t3,
+        TeX              -> Superscript[Subscript[Y, "2t3"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-S3-S3 scalar leptoquark coupling"
+},
+Yo2t3prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo2t3prime,
+        TeX              -> Superscript[Subscript[Yp, "2t3"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-S3-S3 scalar leptoquark coupling"
+},
+Yo3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yo3,
+        TeX              -> Superscript[Subscript[Y, "3"], "(1)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S3-S3-S3-S3 scalar leptoquark coupling"
+},
+Yt2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt2,
+        TeX              -> Superscript[Subscript[Y, "2"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2-R2 scalar leptoquark coupling"
+},
+Yt2t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt2t,
+        TeX              -> Superscript[Subscript[Y, "2t"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-R2t-R2t scalar leptoquark coupling"
+},
+Yt3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt3,
+        TeX              -> Superscript[Subscript[Y, "3"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S3-S3-S3-S3 scalar leptoquark coupling"
+},
+Yf3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yf3,
+        TeX              -> Superscript[Subscript[Y, "3"], "(5)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S3-S3-S3-S3 scalar leptoquark coupling"
+},
+Yt22t == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt22t,
+        TeX              -> Superscript[Subscript[Y, "22t"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2t-R2t scalar leptoquark coupling"
+},
+Yt22tprime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt22tprime,
+        TeX              -> Superscript[Subscript[Yp, "22t"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-R2t-R2t scalar leptoquark coupling"
+},
+Yt23 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt23,
+        TeX              -> Superscript[Subscript[Y, "23"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-S3-S3 scalar leptoquark coupling"
+},
+Yt23prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt23prime,
+        TeX              -> Superscript[Subscript[Yp, "23"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2-R2-S3-S3 scalar leptoquark coupling"
+},
+Yt2t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt2t3,
+        TeX              -> Superscript[Subscript[Y, "2t3"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-S3-S3 scalar leptoquark coupling"
+},
+Yt2t3prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Yt2t3prime,
+        TeX              -> Superscript[Subscript[Yp, "2t3"], "(3)"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "R2t-R2t-S3-S3 scalar leptoquark coupling"
+},
+Y1223 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1223,
+        TeX              -> Subscript[Y, "1223"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2-R2-S3 scalar leptoquark coupling"
+},
+Y1223prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1223prime,
+        TeX              -> Subscript[Yp, "1223"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2-R2-S3 scalar leptoquark coupling"
+},
+Y12t2t3 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y12t2t3,
+        TeX              -> Subscript[Y, "12t2t3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2t-R2t-S3 scalar leptoquark coupling"
+},
+Y12t2t3prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y12t2t3prime,
+        TeX              -> Subscript[Yp, "12t2t3"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2t-R2t-S3 scalar leptoquark coupling"
+},
+Y11t2t2 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y11t2t2,
+        TeX              -> Subscript[Y, "11t2t2"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1t-R2-R2t scalar leptoquark coupling"
+},
+Y11t2t2prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y11t2t2prime,
+        TeX              -> Subscript[Yp, "11t2t2"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S1t-R2-R2t scalar leptoquark coupling"
+},
+Y1t2t23 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1t32t23,
+        TeX              -> Subscript[Y, "1t2t23"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2-R2t-S3 scalar leptoquark coupling"
+},
+Y1t2t23prime == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1t2t23prime,
+        TeX              -> Subscript[Yp, "1t2t23"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-R2-R2t-S3 scalar leptoquark coupling"
+},
+Y1313 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1313,
+        TeX              -> Subscript[Y, "1313"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S3-S1-S3 scalar leptoquark coupling"
+},
+Y1333 == {
+        ParameterType    -> External,
+	      ComplexParameter -> True,
+    	  Indices          -> {},
+	      BlockName        -> Y1333,
+        TeX              -> Subscript[Y, "1333"],
+    	  Value            -> 1.0,
+	      InteractionOrder -> {NP, 1},
+    	  Description      -> "S1-S3-S3-S3 scalar leptoquark coupling"
+}
+};
+
+
+(******************************************)
+(******************************************)
+(*            Field Definitions           *)
+(******************************************)
+(******************************************)
+
+M$ClassesDescription = {
+
+(**********************************)
+(* Scalar singlet S1 = (3,1,-1/3) *)
+(**********************************)
+
+(* physical fields *)
+S[100] == {
+    ClassName        -> S1m13hat,
+    Mass             -> {m1m13hat, Internal},
+    Width            -> {W1m13hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "S1m13hat",
+    PropagatorType   -> ScalarDash,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> -1/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "S1m13hat",
+    AntiParticleName -> "S1m13hat~",
+    FullName         -> "S1m13hat"
+},
+
+(* unphysical fields *)
+S[101] == {
+    ClassName        -> S1m13,
+    Unphysical       -> True,
+    SelfConjugate    -> False,
+    QuantumNumbers   -> {Y -> -1/3},
+    Indices          -> {Index[Colour]},
+    Definitions      -> { S1m13[cc_] :> HC[W13mat[1,1]] S1m13hat[cc] + HC[W13mat[2,1]] R2tm13hat[cc] + HC[W13mat[3,1]] S3m13hat[cc]}
+},
+
+(***********************************)
+(* Scalar singlet S1t = (3,1,-4/3) *)
+(***********************************)
+
+(* physical fields *)
+S[200] == {
+    ClassName        -> S1tm43hat,
+    Mass             -> {m1tm43hat, Internal},
+    Width            -> {W1tm43hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "S1tm43hat",
+    PropagatorType   -> D,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> -4/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "S1tm43hat",
+    AntiParticleName -> "S1tm43hat~",
+    FullName         -> "S1tm43hat"
+},
+
+(* unphysical fields *)
+S[201] == {
+    ClassName        -> S1tm43,
+    Unphysical       -> True,
+    SelfConjugate    -> False,
+    QuantumNumbers   -> {Y -> -4/3},
+    Indices          -> {Index[Colour]},
+    Definitions      -> { S1tm43[cc_] :> HC[W43mat[1,1]] S1tm43hat[cc] + HC[W43mat[2,1]] S3m43hat[cc]}
+},
+
+(*********************************)
+(* Scalar doublet R2 = (3,2,7/6)*)
+(*********************************)
+
+(* physical fields *)
+S[300] == {
+    ClassName        -> R2p53hat,
+    Mass             -> {m2p53hat, Internal},
+    Width            -> {W2p53hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "R2p53hat",
+    PropagatorType   -> D,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> 5/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "R2p53hat",
+    AntiParticleName -> "R2p53hat~",
+    FullName         -> "R53hat"
+},
+
+S[301] == {
+    ClassName        -> R2p23hat,
+    Mass             -> {m2p23hat, Internal},
+    Width            -> {W2p23hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "R2p23hat",
+    PropagatorType   -> D,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> 2/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "R2p23hat",
+    AntiParticleName -> "R2p23hat~",
+    FullName         -> "R23hat"
+},
+
+(* unphysical fields *)
+S[303] == {
+    ClassName      -> R2,
+    Unphysical     -> True,
+    Indices        -> {Index[SU2D], Index[Colour]},
+    FlavorIndex    -> SU2D,
+    SelfConjugate  -> False,
+    QuantumNumbers -> {Y -> 7/6},
+    Definitions    -> { R2[1,cc_] :> R2p53hat[cc], R2[2,cc_] :> HC[W23mat[1,1]] R2p23hat[cc] + HC[W23mat[2,1]] R2tp23hat[cc] + HC[W23mat[3,1]] S3p23hat[cc]}
+},
+
+
+(**********************************)
+(* Scalar doublet R2t = (3,2,1/6)*)
+(**********************************)
+
+(* physical fields *)
+S[402] == {
+    ClassName        -> R2tm13hat,
+    Mass             -> {m2tm13hat, Internal},
+    Width            -> {W2tm13hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "R2t13hat",
+    PropagatorType   -> D,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> -1/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "R2tm13hat",
+    AntiParticleName -> "R2tm13hat~",
+    FullName         -> "R13hat"
+},
+
+S[403] == {
+    ClassName        -> R2tp23hat,
+    Mass             -> {m2tp23hat, Internal},
+    Width            -> {W2tp23hat, Internal},
+    SelfConjugate    -> False,
+    PropagatorLabel  -> "R2tp23hat",
+    PropagatorType   -> D,
+    PropagatorArrow  -> None,
+    QuantumNumbers   -> {Q -> 2/3},
+    Indices          -> {Index[Colour]},
+    ParticleName     -> "R2tp23hat",
+    AntiParticleName -> "R2tp23hat~",
+    FullName         -> "R23hat"
+},
+
+(* unphysical fields *)
+S[405] == {
+    ClassName      -> R2t,
+    Unphysical     -> True,
+    SelfConjugate  -> False,
+    QuantumNumbers -> {Y -> 1/6},
+    Indices        -> {Index[SU2D], Index[Colour]},
+    FlavorIndex    -> SU2D,
+    Definitions    -> {R2t[1,cc_] :> HC[W23mat[1,2]] R2p23hat[cc] + HC[W23mat[2,2]] R2tp23hat[cc] + HC[W23mat[3,2]] S3p23hat[cc], R2t[2,cc_] :> HC[W13mat][1,2] S1m13hat[cc] + HC[W13mat][2,2] R2tm13hat[cc] + HC[W13mat][3,2] S3m13hat[cc]}
+},
+
+(**********************************)
+(* Scalar triplet S3 = (3,3,-1/3) *)
+(**********************************)
+
+(* physical fields *)
+S[502] == {
+           ClassName        -> S3m13hat,
+           Mass             -> {m3m13hat, Internal},
+           Width            -> {W3m13hat, Internal},
+           SelfConjugate    -> False,
+           PropagatorLabel  -> "S3m13hat",
+           PropagatorType   -> D,
+           PropagatorArrow  -> None,
+           QuantumNumbers   -> {Q -> -1/3},
+           Indices          -> {Index[Colour]},
+           ParticleName     -> "S3m13hat",
+           AntiParticleName -> "S3m13hat~",
+           FullName         -> "S313hat"
+},
+
+S[504] == {
+           ClassName        -> S3p23hat,
+           Mass             -> {m3p23hat, Internal},
+           Width            -> {W3p23hat, Internal},
+           SelfConjugate    -> False,
+           PropagatorLabel  -> "S3p23hat",
+           PropagatorType   -> D,
+           PropagatorArrow  -> None,
+           QuantumNumbers   -> {Q -> 2/3},
+           Indices          -> {Index[Colour]},
+           ParticleName     -> "S3p23hat",
+           AntiParticleName -> "S3p23hat~",
+           FullName         -> "S323hat"
+},
+
+S[506] == {
+           ClassName        -> S3m43hat,
+           Mass             -> {m3m43hat, Internal},
+           Width            -> {W3m43hat, Internal},
+           SelfConjugate    -> False,
+           PropagatorLabel  -> "S3m43hat",
+           PropagatorType   -> D,
+           PropagatorArrow  -> None,
+           QuantumNumbers   -> {Q -> -4/3},
+           Indices          -> {Index[Colour]},
+           ParticleName     -> "S3m43hat",
+           AntiParticleName -> "S3m43hat~",
+           FullName         -> "S343hat"
+},
+
+(* unphysical fields *)
+S[507] == {
+           ClassName      -> S3,
+           Unphysical     -> True,
+           SelfConjugate  -> False,
+           QuantumNumbers -> {Y -> -1/3},
+           Indices        -> {Index[SU2W], Index[Colour]},
+           FlavorIndex    -> SU2W,
+           Definitions    -> {S3[1,cc_] -> (HC[W43mat[1,2]] S1tm43hat[cc] + HC[W43mat[2,2]] S3m43hat[cc] + HC[W23mat[3,3]] S3p23hat[cc] + HC[W23mat[2,3]] R2tp23hat[cc] + HC[W23mat[1,3]] R2p23hat[cc])/Sqrt[2],
+                              S3[2,cc_] -> (HC[W43mat[1,2]] S1tm43hat[cc] + HC[W43mat[2,2]] S3m43hat[cc] - HC[W23mat[3,3]] S3p23hat[cc] - HC[W23mat[2,3]] R2tp23hat[cc] - HC[W23mat[1,3]] R2p23hat[cc])/(I*Sqrt[2]),
+                              S3[3,cc_] ->  HC[W13mat[1,3]] S1m13hat[cc] + HC[W13mat[2,3]] R2tm13hat[cc] + HC[W13mat[3,3]] S3m13hat[cc]}
+}
+};
+
+
+(******************************************)
+(******************************************)
+(*              Lagrangians               *)
+(******************************************)
+(******************************************)
+
+(**********************************)
+(* Scalar singlet S1 = (3,1,-1/3) *)
+(**********************************)
+
+(* Kinetic term *)
+L1Kin := Module[ {mu,aa}, DC[S1m13bar[aa],mu] DC[S1m13[aa],mu]];
+
+(* LQ-quark-lepton interactions *)
+L1YukLLNonHC :=  Module[ {a,b,sp,i,j,aa}, ExpandIndices[Y1LL[i,j] anti[CC[QL]][sp,a,i,aa].LL[sp,b,j] S1m13bar[aa] Eps[a,b], FlavorExpand->{SU2D}]];
+L1YukLL := L1YukLLNonHC + HC[L1YukLLNonHC];
+
+L1YukRRNonHC :=  Module[ {sp,i,j,aa}, Y1RR[i,j] anti[CC[uR]][sp,i,aa].lR[sp,j] S1m13bar[aa]];
+L1YukRR := L1YukRRNonHC + HC[L1YukRRNonHC];
+
+(* LQ-quark-quark interactions *)
+L1YukQLLNonHC := Module[ {a,b,sp,i,j,aa,bb,cc}, ExpandIndices[(Y1QLL[i,j] + Y1QLL[j,i])/2 * anti[CC[QL]][sp,a,i,aa].QL[sp,b,j,bb] S1m13[cc] Eps[a,b] Eps[aa,bb,cc], FlavorExpand->{SU2D}]];
+L1YukQLL := L1YukQLLNonHC + HC[L1YukQLLNonHC];
+
+L1YukQRRNonHC := Module[ {sp,i,j,aa,bb,cc}, ExpandIndices[Y1QRR[i,j] anti[CC[uR]][sp,i,aa].dR[sp,j,bb] S1m13[cc] Eps[aa,bb,cc], FlavorExpand->{SU2D}]];
+L1YukQRR := L1YukQRRNonHC + HC[L1YukQRRNonHC];
+
+(* Complete S1 Lagrangian *)
+L1 := L1Kin + L1YukLL + L1YukRR + L1YukQLL + L1YukQRR;
+
+
+(***********************************)
+(* Scalar singlet S1t = (3,1,-4/3) *)
+(***********************************)
+
+(* Kinetic term *)
+L1tKin := Module[ {mu,aa}, DC[S1tm43bar[aa],mu] DC[S1tm43[aa],mu]];
+
+(* LQ-quark-lepton interactions *)
+L1tYukRRNonHC :=  Module[ {sp,i,j,aa}, Y1tRR[i,j] anti[CC[dR]][sp,i,aa].lR[sp,j] S1tm43bar[aa]];
+L1tYukRR := L1tYukRRNonHC + HC[L1tYukRRNonHC];
+
+(* LQ-quark-quark interactions *)
+L1tYukQRRNonHC := Module[ {sp,i,j,aa,bb,cc}, (Y1tQRR[i,j] - Y1tQRR[j,i])/2 * anti[CC[uR]][sp,i,aa].uR[sp,j,bb] S1tm43[cc] Eps[aa,bb,cc]];
+L1tYukQRR := L1tYukQRRNonHC + HC[L1tYukQRRNonHC];
+
+(* Complete S1~ = S1t Lagrangian *)
+L1t := L1tKin + L1tYukRR + L1tYukQRR;
+
+
+(*********************************)
+(* Scalar doublet R2 = (3,2,7/6) *)
+(*********************************)
+
+(* Kinetic term *)
+L2Kin := Module[ {mu,a,aa}, ExpandIndices[DC[R2bar[a,aa],mu] DC[R2[a,aa],mu], FlavorExpand->{SU2W,SU2D}]];
+
+(* LQ-quark-lepton interactions *)
+L2YukRLNonHC :=  Module[ {a,sp,i,j,aa}, ExpandIndices[Y2RL[i,j] R2[a,aa] Eps[a,b] uRbar[sp,i,aa].LL[sp,b,j], FlavorExpand->{SU2D}]];
+L2YukRL := L2YukRLNonHC + HC[L2YukRLNonHC];
+
+L2YukLRNonHC :=  Module[ {a,b,sp,i,j,aa}, ExpandIndices[Y2LR[i,j] QLbar[sp,a,i,aa].lR[sp,j] R2[a,aa], FlavorExpand->{SU2D}]];
+L2YukLR := L2YukLRNonHC + HC[L2YukLRNonHC];
+
+(* Complete R2 Lagrangian *)
+L2 := L2Kin + L2YukRL + L2YukLR;
+
+
+(**********************************)
+(* Scalar doublet R2t = (3,2,1/6) *)
+(**********************************)
+
+(* Kinetic term *)
+L2tKin := Module[ {mu,a,aa},
+ExpandIndices[DC[R2tbar[a,aa],mu] DC[R2t[a,aa],mu], FlavorExpand->{SU2W,SU2D}]];
+
+(* LQ-quark-lepton interactions *)
+L2tYukRLNonHC :=  Module[ {a,sp,i,j,aa}, ExpandIndices[Y2tRL[i,j] R2t[a,aa] Eps[a,b] dRbar[sp,i,aa].LL[sp,b,j], FlavorExpand->{SU2D}]];
+L2tYukRL := L2tYukRLNonHC + HC[L2tYukRLNonHC];
+
+(* Complete R2~ = R2t Lagrangian *)
+L2t := L2tKin + L2tYukRL;
+
+(**********************************)
+(* Scalar triplet S3 = (3,3,-1/3) *)
+(**********************************)
+
+(* Kinetic term *)
+L3Kin := Module[ {mu,a,aa}, ExpandIndices[DC[S3bar[a,aa],mu] DC[S3[a,aa],mu], FlavorExpand->{SU2W,SU2D}]];
+
+(* LQ-quark-lepton interactions *)
+L3YukLLNonHC :=  Module[ {a,b,c,D,sp,i,j,aa}, ExpandIndices[Y3LL[i,j] anti[CC[QL]][sp,a,i,aa].LL[sp,c,j] S3bar[D,aa] 2*Ta[D,b,c] Eps[a,b], FlavorExpand->{SU2W,SU2D}]];
+L3YukLL := L3YukLLNonHC + HC[L3YukLLNonHC];
+
+(* LQ-quark-quark interactions *)
+L3YukQLLNonHC :=  Module[ {a,b,c,D,sp,i,j,aa,bb,cc}, ExpandIndices[(Y3QLL[i,j] - Y3QLL[j,i])/2 anti[CC[QL]][sp,a,i,aa].QL[sp,c,j,bb] Eps[a,b] 2*Ta[D,b,c] S3[D,cc] Eps[aa,bb,cc], FlavorExpand->{SU2W,SU2D}]];
+L3YukQLL := L3YukQLLNonHC + HC[L3YukQLLNonHC];
+
+(* Complete S3 Lagrangian *)
+L3 := L3Kin + L3YukLL + L3YukQLL;
+
+(************************************)
+(*    LQ Bilinear Interactions      *)
+(************************************)
+
+L12tNonHC := Module[ {a, aa},
+ExpandIndices[ -A12t R2tbar[a,aa] Phi[a] S1m13[aa], FlavorExpand->{SU2D}]];
+L12t := L12tNonHC + HC[L12tNonHC];
+
+L2t3NonHC := Module[ {a,b,C,aa},
+ExpandIndices[ A2t3 R2tbar[a,aa] 2*Ta[C,a,b] S3[C,aa] Phi[b], FlavorExpand->{SU2D, SU2W}]];
+L2t3 := L2t3NonHC + HC[L2t3NonHC];
+
+L22tNonHC := Module[ {a,b,c,aa},
+ExpandIndices[ Y22t R2bar[a,aa] Phi[a] Phi[b] Eps[b,c] R2t[c,aa], FlavorExpand->{SU2D}]];
+L22t := L22tNonHC + HC[L22tNonHC];
+
+L1t3NonHC := Module[ {a,b,c,D,aa},
+ExpandIndices[ Y1t3 Phi[a]*Eps[a,b]*2*Ta[D,b,c] S3bar[D,aa] Phi[c] S1tm43[aa], FlavorExpand->{SU2D, SU2W}]];
+L1t3 := L1t3NonHC + HC[L1t3NonHC];
+
+L13NonHC := Module[ {a,b,C,aa},
+ExpandIndices[ Y13 HC[Phi][a] (2*Ta[C,a,b] S3[C,aa]) Phi[b] S1m13bar[aa], FlavorExpand->{SU2D, SU2W}]];
+L13 := L13NonHC + HC[L13NonHC];
+
+L22 := Module[ {a,b,c,d,aa},
+ExpandIndices[ - Y22 HC[Phi[a] Eps[a,b] R2[b,aa]] Phi[c] Eps[c,d] R2[d,aa], FlavorExpand->{SU2D}]];
+
+L2t2t := Module[ {a,b,c,d,aa},
+ExpandIndices[ - Y2t2t HC[Phi[a] Eps[a,b] R2t[b,aa]] Phi[c] Eps[c,d] R2t[d,aa], FlavorExpand->{SU2D}]];
+
+L33 := Module[ {a,b,C,D,E,aa},
+ExpandIndices[ - Y33*I*Eps[C,D,E]*(HC[Phi][a]*2*Ta[C,a,b]*Phi[b])*S3bar[D,aa]*S3[E,aa], FlavorExpand->{SU2D, SU2W}]];
+
+Lm1 := Module[ {a,aa},ExpandIndices[ - m1 m1 S1m13bar[aa] S1m13[aa] - Y1*HC[Phi[a]]Phi[a] S1m13bar[aa] S1m13[aa], FlavorExpand->{SU2D}]];
+Lm1t := Module[ {a,aa},ExpandIndices[ - m1t m1t HC[S1tm43][aa] S1tm43[aa] - Y1t*HC[Phi][a]Phi[a] HC[S1tm43][aa] S1tm43[aa], FlavorExpand->{SU2D}]];
+Lm2 := Module[ {a,b,c,aa,bb},ExpandIndices[- m2 m2 HC[R2][a,aa] R2[a,aa] - Y2*HC[Phi][b]Phi[b] HC[R2][c,bb] R2[c,bb], FlavorExpand->{SU2D}]];
+Lm2t := Module[ {a,b,c,aa,bb},ExpandIndices[- m2t m2t HC[R2t][a,aa] R2t[a,aa] - Y2t*HC[Phi][b]Phi[b] HC[R2t][c,bb] R2t[c,bb], FlavorExpand->{SU2D}]];
+Lm3 := Module[ {a,b,c,aa,bb},ExpandIndices[- m3 m3 HC[S3][a,aa] S3[a,aa] - Y3*HC[Phi][b]Phi[b] HC[S3][c,bb] S3[c,bb], FlavorExpand->{SU2D, SU2W}]];
+
+(**********************************)
+(*    LQ Triple Interactions      *)
+(**********************************)
+
+(* Without Higgs Field *)
+L12t2tNonHC := Module[ {a,b,aa,bb,cc},
+ExpandIndices[ A12t2t S1m13[aa] R2t[a,bb] Eps[a,b] R2t[b,cc] Eps[aa,bb,cc], FlavorExpand->{SU2D}]];
+L12t2t := L12t2tNonHC + HC[L12t2tNonHC];
+
+L1t22tNonHC := Module[ {a,b,aa,bb,cc},
+ExpandIndices[ A1t22t S1tm43[aa] R2[a,bb] Eps[a,b] R2t[b,cc] Eps[aa,bb,cc], FlavorExpand->{SU2D}]];
+L1t22t := L1t22tNonHC + HC[L1t22tNonHC];
+
+(* With Higgs Field *)
+L11t2NonHC := Module[ {a,b,aa,bb,cc},
+ExpandIndices[ Y11t2 S1m13[aa] S1tm43[bb] R2[a,cc] Eps[a,b] Phi[b] Eps[aa,bb,cc], FlavorExpand->{SU2D}]];
+L11t2 := L11t2NonHC + HC[L11t2NonHC];
+
+L123NonHC := Module[ {a,b,C,aa,bb,cc},
+ExpandIndices[ Y123 S1m13[aa] HC[Phi][a] 2*Ta[C,a,b] S3[C,cc] R2[b,bb] Eps[aa,bb,cc], FlavorExpand->{SU2D, SU2W}]];
+L123 := L123NonHC + HC[L123NonHC];
+
+L12t3NonHC := Module[ {a,b,c,D,aa,bb,cc},
+ExpandIndices[ Y12t3 S1m13[aa] R2t[a,bb] Eps[a,b] 2*Ta[D,b,c] S3[D,cc] Phi[c] Eps[aa,bb,cc], FlavorExpand->{SU2D, SU2W}]];
+L12t3 := L12t3NonHC + HC[L12t3NonHC];
+
+L1t23NonHC := Module[ {a,b,c,D,aa,bb,cc},
+ExpandIndices[ Y1t23 S1tm43[aa] R2[a,bb] Eps[a,b] 2*Ta[D,b,c] S3[D,cc] Phi[c] Eps[aa,bb,cc], FlavorExpand->{SU2D, SU2W}]];
+L1t23 := L1t23NonHC + HC[L1t23NonHC];
+
+L233NonHC := Module[ {a,b,C,D,E,aa,bb,cc},
+ExpandIndices[ Y233 HC[Phi][a] 2*Ta[C,a,b] R2[b,aa] S3[D,bb] I*Eps[C,D,E] S3[E,cc] Eps[aa,bb,cc], FlavorExpand->{SU2D, SU2W}]];
+L233 := L233NonHC + HC[L233NonHC];
+
+L2t33NonHC := Module[ {a,b,c,D,E,F,aa,bb,cc},
+ExpandIndices[ Y2t33 R2t[a,aa] Eps[a,b] 2*Ta[D,b,c] Phi[c] S3[E,bb] I*Eps[D,E,F] S3[F,cc] Eps[aa,bb,cc], FlavorExpand->{SU2D, SU2W}]];
+L2t33 := L2t33NonHC + HC[L2t33NonHC];
+
+
+(**********************************)
+(*    LQ Quartic Interactions     *)
+(**********************************)
+
+(* Trivial quartic interactions *)
+Lo1 := Module[ {aa,bb},
+ExpandIndices[ 1/2 * Yo1 S1m13bar[aa] S1m13[aa] S1m13bar[bb] S1m13[bb] ]];
+
+Lo11t := Module[ {aa,bb},
+ExpandIndices[ Yo11t S1m13bar[aa] S1m13[aa] S1tm43bar[bb] S1tm43[bb] ]];
+Lo11tprime := Module[ {aa,bb},
+ExpandIndices[ Yo11tprime S1m13bar[aa] S1m13[bb] S1tm43bar[bb] S1tm43[aa] ]];
+
+Lo12 := Module[ {a, aa, bb},
+ExpandIndices[ Yo12 S1m13bar[aa] S1m13[aa] R2bar[a, bb] R2[a, bb], FlavorExpand->{SU2D} ]];
+Lo12prime := Module[ {a, aa, bb},
+ExpandIndices[ Yo12prime S1m13bar[aa] S1m13[bb] R2bar[a, bb] R2[a, aa], FlavorExpand->{SU2D}]];
+
+Lo12t := Module[ {a, aa, bb},
+ExpandIndices[ Yo12t S1m13bar[aa] S1m13[aa] R2tbar[a, bb] R2t[a, bb], FlavorExpand->{SU2D} ]];
+Lo12tprime := Module[ {a, aa, bb},
+ExpandIndices[ Yo12tprime S1m13bar[aa] S1m13[bb] R2tbar[a, bb] R2t[a, aa], FlavorExpand->{SU2D} ]];
+
+Lo13 := Module[ {A, aa, bb},
+ExpandIndices[ Yo13 S1m13bar[aa] S1m13[aa] S3bar[A, bb] S3[A, bb], FlavorExpand->{SU2W} ]];
+Lo13prime := Module[ {A, aa, bb},
+ExpandIndices[ Yo13prime S1m13bar[aa] S1m13[bb] S3bar[A, bb] S3[A, aa], FlavorExpand->{SU2W} ]];
+
+Lo1t := Module[ {aa,bb},
+ExpandIndices[1/2 * Yo1t S1tm43bar[aa] S1tm43[aa] S1tm43bar[bb] S1tm43[bb] ]];
+
+Lo1t2 := Module[ {a, aa, bb},
+ExpandIndices[ Yo1t2 S1tm43bar[aa] S1tm43[aa] R2bar[a, bb] R2[a, bb], FlavorExpand->{SU2D} ]];
+Lo1t2prime := Module[ {a, aa, bb},
+ExpandIndices[ Yo1t2prime S1tm43bar[aa] S1tm43[bb] R2bar[a, bb] R2[a, aa], FlavorExpand->{SU2D} ]];
+
+Lo1t2t := Module[ {a, aa, bb},
+ExpandIndices[ Yo1t2t S1tm43bar[aa] S1tm43[aa] R2tbar[a, bb] R2t[a, bb], FlavorExpand->{SU2D} ]];
+Lo1t2tprime := Module[ {a, aa, bb},
+ExpandIndices[ Yo1t2tprime S1tm43bar[aa] S1tm43[bb] R2tbar[a, bb] R2t[a, aa], FlavorExpand->{SU2D} ]];
+
+Lo1t3 := Module[ {A, aa, bb},
+ExpandIndices[ Yo1t3 S1tm43bar[aa] S1tm43[aa] S3bar[A, bb] S3[A, bb], FlavorExpand->{SU2W} ]];
+Lo1t3prime := Module[ {A, aa, bb},
+ExpandIndices[ Yo1t3prime S1tm43bar[aa] S1tm43[bb] S3bar[A, bb] S3[A, aa], FlavorExpand->{SU2W} ]];
+
+Lo2 := Module[ {a, b, aa, bb},
+ExpandIndices[1/2 * Yo2 R2bar[b, aa] R2[b, aa] R2bar[a, bb] R2[a, bb], FlavorExpand->{SU2D} ]];
+
+Lo22t := Module[ {a, b, aa, bb},
+ExpandIndices[ Yo22t R2bar[b, aa] R2[b, aa] R2tbar[a, bb] R2t[a, bb], FlavorExpand->{SU2D} ]];
+Lo22tprime := Module[ {a, b, aa, bb},
+ExpandIndices[ Yo22tprime R2bar[b, aa] R2[b, bb] R2tbar[a, bb] R2t[a, aa], FlavorExpand->{SU2D} ]];
+
+Lo23 := Module[ {a, B, aa, bb},
+ExpandIndices[ Yo23 R2bar[a, aa] R2[a, aa] S3bar[B, bb] S3[B, bb], FlavorExpand->{SU2D, SU2W} ]];
+Lo23prime := Module[ {a, B, aa, bb},
+ExpandIndices[ Yo23prime R2bar[a, aa] R2[a, bb] S3bar[B, bb] S3[B, aa], FlavorExpand->{SU2D, SU2W} ]];
+
+Lo2t := Module[ {a, b, aa, bb},
+ExpandIndices[1/2 * Yo2t R2tbar[b, aa] R2t[b, aa] R2tbar[a, bb] R2t[a, bb], FlavorExpand->{SU2D} ]];
+
+Lo2t3 := Module[ {a, B, aa, bb},
+ExpandIndices[ Yo2t3 R2tbar[a, aa] R2t[a, aa] S3bar[B, bb] S3[B, bb], FlavorExpand->{SU2D, SU2W} ]];
+Lo2t3prime := Module[ {a, B, aa, bb},
+ExpandIndices[ Yo2t3prime R2tbar[a, aa] R2t[a, bb] S3bar[B, bb] S3[B, aa], FlavorExpand->{SU2D, SU2W} ]];
+
+Lo3 := Module[ {A, B, aa, bb},
+ExpandIndices[1/2 * Yo3 S3bar[A, aa] S3[A, aa] S3bar[B, bb] S3[B, bb], FlavorExpand->{SU2W} ]];
+
+
+(* Non-trivial quartic interactions *)
+
+Lt2 := Module[ {a, b, aa, bb},
+ExpandIndices[ 1/2*Yt2 R2bar[b, aa] R2[b, bb] R2bar[a, bb] R2[a, aa], FlavorExpand->{SU2D} ]];
+
+Lt2t := Module[ {a, b, aa, bb},
+ExpandIndices[ 1/2*Yt2t R2tbar[b, aa] R2t[b, bb] R2tbar[a, bb] R2t[a, aa], FlavorExpand->{SU2D} ]];
+
+Lt3 := Module[ {A, B, aa, bb},
+ExpandIndices[1/2 * Yt3 S3bar[A, aa] S3[A, bb] S3bar[B, bb] S3[B, aa], FlavorExpand->{SU2W} ]];
+
+Lf3 := Module[ {A, B, aa, bb},
+ExpandIndices[ 1/2*Yf3 S3bar[A, aa] S3[B, aa] S3bar[A, bb] S3[B, bb], FlavorExpand->{SU2W} ]];
+
+Lt22t := Module[ {a, b, aa, bb},
+ExpandIndices[ Yt22t R2bar[a, aa] R2t[a, aa] R2tbar[b, bb] R2[b, bb], FlavorExpand->{SU2D}]];
+Lt22tprime := Module[ {a, b, aa, bb},
+ExpandIndices[ Yt22tprime R2bar[a, aa] R2t[a, bb] R2tbar[b, bb] R2[b, aa], FlavorExpand->{SU2D} ]];
+
+Lt23 := Module[ {A,B,C,a,b,aa,bb},
+ExpandIndices[ Yt23 R2bar[a, aa] 2*Ta[A,a,b] R2[b, aa] S3bar[B, bb] I*Eps[A,B,C] S3[C, bb], FlavorExpand->{SU2D, SU2W}]];
+Lt23prime := Module[ {A,B,C,a,b,aa,bb},
+ExpandIndices[ Yt23prime R2bar[a, aa] 2*Ta[A,a,b] R2[b, bb] S3bar[B, bb] I*Eps[A,B,C] S3[C, aa], FlavorExpand->{SU2D, SU2W}]];
+
+Lt2t3 := Module[ {A,B,C,a,b,aa,bb},
+ExpandIndices[ Yt23 R2tbar[a, aa] 2*Ta[A,a,b] R2t[b, aa] S3bar[B, bb] I*Eps[A,B,C] S3[C, bb], FlavorExpand->{SU2D, SU2W}]];
+Lt2t3prime := Module[ {A,B,C,a,b,aa,bb},
+ExpandIndices[ Yt23prime R2tbar[a, aa] 2*Ta[A,a,b] R2t[b, bb] S3bar[B, bb] I*Eps[A,B,C] S3[C, aa], FlavorExpand->{SU2D, SU2W}]];
+
+L1223NonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y1223 S1m13bar[aa] R2bar[a,bb] 2*Ta[C,a,b] S3[C,bb] R2[b,aa], FlavorExpand->{SU2D, SU2W} ]];
+L1223 := L1223NonHC + HC[L1223NonHC]
+L1223primeNonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y1223prime S1m13bar[aa] R2bar[a,bb] 2*Ta[C,a,b] S3[C,aa] R2[b,bb], FlavorExpand->{SU2D, SU2W} ]];
+L1223prime := L1223primeNonHC + HC[L1223primeNonHC]
+
+L12t2t3NonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y12t2t3 S1m13bar[aa] R2tbar[a,bb] 2*Ta[C,a,b] S3[C,bb] R2t[b,aa], FlavorExpand->{SU2D, SU2W} ]];
+L12t2t3 := L12t2t3NonHC + HC[L12t2t3NonHC]
+L12t2t3primeNonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y12t2t3prime S1m13bar[aa] R2tbar[a,bb] 2*Ta[C,a,b]S3[C,aa] R2t[b,bb], FlavorExpand->{SU2D, SU2W} ]];
+L12t2t3prime := L12t2t3primeNonHC + HC[L12t2t3primeNonHC]
+
+L11t2t2NonHC := Module[ {a, aa, bb},
+ExpandIndices[ Y11t2t2 S1m13bar[aa] S1tm43[aa] R2tbar[a,bb] R2[a,bb], FlavorExpand->{SU2D} ]];
+L11t2t2 := L11t2t2NonHC + HC[L11t2t2NonHC]
+L11t2t2primeNonHC := Module[ {a, aa, bb},
+ExpandIndices[ Y11t2t2prime S1m13bar[aa] S1tm43[bb] R2tbar[a,bb] R2[a,aa], FlavorExpand->{SU2D} ]];
+L11t2t2prime := L11t2t2primeNonHC + HC[L11t2t2primeNonHC]
+
+L1t2t23NonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y1t2t23 S1tm43bar[aa] R2bar[a,bb] 2*Ta[C,a,b] S3[C,bb] R2t[b,aa], FlavorExpand->{SU2D, SU2W} ]];
+L1t2t23 := L1t2t23NonHC + HC[L1t2t23NonHC]
+L1t2t23primeNonHC := Module[ {a, b, C, aa, bb},
+ExpandIndices[ Y1t2t23prime S1tm43bar[aa] R2bar[a,bb] 2*Ta[C,a,b] S3[C,aa] R2t[b,bb], FlavorExpand->{SU2D, SU2W} ]];
+L1t2t23prime := L1t2t23primeNonHC + HC[L1t2t23primeNonHC]
+
+L1313NonHC := Module[ {A, aa, bb},
+ExpandIndices[ 1/2*Y1313 S1m13bar[aa] S3[A,aa] S1m13bar[bb] S3[A,bb], FlavorExpand->{SU2D, SU2W} ]];
+L1313 := L1313NonHC + HC[L1313NonHC]
+
+L1333NonHC := Module[ {A, B, C, aa, bb},
+ExpandIndices[ Y1333 S1m13bar[aa] S3[A,aa] S3bar[B,bb] S3[C,bb] I*Eps[A,B,C], FlavorExpand->{SU2W} ]];
+L1333 := L1333NonHC + HC[L1333NonHC]
+
+(**********************************)
+(*        Total Lagrangian        *)
+(**********************************)
+LQ2Phi := L12t + L2t3 + L22t + L1t3 + L13 + L22 + L2t2t + L33 + Lm1 + Lm1t + Lm2 + Lm2t + Lm3;
+LQkin := L1Kin + L1tKin + L2Kin + L2tKin + L3Kin;
+LQf := L1YukLL + L1YukRR  + L1tYukRR + L2YukRL + L2YukLR + L2tYukRL + L3YukLL + L1YukQLL + L1tYukQRR + L1YukQRR + L3YukQLL;
+LQ3Phi := L12t2t + L1t22t + L11t2 + L123 + L12t3 + L1t23 + L233 + L2t33;
+LQ4Phi := Lo1 + Lo11t + Lo12 + Lo12t + Lo13 + Lo1t + Lo1t2 + Lo1t2t + Lo1t3 + Lo2 + Lo22t + Lo23 + Lo2t + Lo2t3 + Lo3 + Lt2 + Lt2t + Lt3 + Lf3 + Lt22t + Lt23 + Lt2t3 + L1223 + L12t2t3 + L11t2t2 + L1t2t23 + L1313 + L1333;
+
+LQall := LQ2Phi + LQkin + LQf + LQ3Phi + LQ4Phi;
+(***********************************************************)

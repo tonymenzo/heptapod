@@ -1,0 +1,54 @@
+[INFO] Loading via explicit file: /Users/ynot/code/software/FeynRules_v2.3.49/FeynRules.m
+ - FeynRules - 
+Version: 2.3.49 (*29 September 2021).
+Authors: A. Alloul, N. Christensen, C. Degrande, C. Duhr, B. Fuks
+ 
+Please cite:
+    - Comput.Phys.Commun.185:2250-2300,2014 (arXiv:1310.1921);
+    - Comput.Phys.Commun.180:1614-1641,2009 (arXiv:0806.4194).
+ 
+http://feynrules.phys.ucl.ac.be
+ 
+The FeynRules palette can be opened using the command FRPalette[].
+[INFO] Loading SM from: /Users/ynot/code/software/FeynRules_v2.3.49/Models/SM/SM.fr
+Merging model-files...
+This model implementation was created by
+Tony Menzo
+Model Version: 1.0.0
+For more information, type ModelInformation[].
+
+   - Loading particle classes.
+   - Loading gauge group classes.
+   - Loading parameter classes.
+
+Model S1_LQ_RR loaded.
+[INFO] UFO output: /Users/ynot/code/research/orcai_hep/demos/hep_bsm_demo_files/sandbox068/feynrules/models/S1_LQ_RR_UFO
+ --- Universal FeynRules Output (UFO) v 1.1 ---
+
+CreateDirectory::eexist: /Users/ynot/code/research/orcai_hep/demos/hep_bsm_demo_files/sandbox068/feynrules/models/S1_LQ_RR_UFO already exists.
+Style[Starting Feynman rule calculation., RGBColor[1, 0.5, 0], Bold]
+Expanding the Lagrangian...
+Expanding the indices over 16 cores
+Collecting the different structures that enter the vertex.
+102 possible non-zero vertices have been found -> starting the computation: Dynamic[FR$FeynmanRules] / 102.
+97 vertices obtained.
+Flavor expansion of the vertices distributed over 16 cores: Dynamic[FR$Count1] / 97
+   - Saved vertices in InterfaceRun[ 1 ].
+
+QN::NonConserv: Warning: non quantum number conserving vertex encountered!
+Quantum number LeptonNumber not conserved in vertex {S1, ebar, CC[u]}.
+
+QN::NonConserv: Warning: non quantum number conserving vertex encountered!
+Quantum number LeptonNumber not conserved in vertex {S1bar, CC[ebar], u}.
+Style[Computing the squared matrix elements relevant for the 1->2 decays: , RGBColor[1, 0.5, 0], Bold]
+Dynamic[PRIVATE`mycounter] / 50
+Squared matrix elent compute in 0.834316 seconds.
+Dynamic[PRIVATE`mycounter] / 60
+Decay widths computed in 0.32903 seconds.
+Preparing Python output.
+    - Splitting vertices into building blocks.
+Splitting of vertices distributed over 16 kernels.
+    - Optimizing: Dynamic[PRIVATE`PY$SplitVertexCounter]/167 .
+    - Writing files.
+Done!
+[INFO] Done.

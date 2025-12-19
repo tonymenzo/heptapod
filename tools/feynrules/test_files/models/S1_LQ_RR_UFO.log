@@ -1,0 +1,39 @@
+# This file was automatically created by FeynRules 2.3.49
+# Mathematica version: 13.3.1 for Mac OS X ARM (64-bit) (July 24, 2023)
+# Date: Sat 15 Nov 2025 17:26:01
+
+
+# 
+# This is the logfile for the model S1_LQ_RR
+
+# Authors: Tony Menzo
+# Model version: 1.0.0
+# Checking the Quantum numbers
+   * Electric charge defined.
+# Checking the Lagrangians
+   * All Lagrangians are ok.
+#
+# Particle definitions
+#
+
+   * No particles removed. All particles correspond to GenInt setup.
+
+# Automatically assigned PDG numbers
+   * Assigned PDG number 9000001 to particle ghA
+   * Assigned PDG number 9000002 to particle ghZ
+   * Assigned PDG number 9000003 to particle ghWp
+   * Assigned PDG number 9000004 to particle ghWm
+   * Assigned PDG number 9000005 to particle S1
+
+
+# Compulsory PDG codes:
+   * Class SM leptons complete.
+   * Class SM neutrinos complete.
+   * Class SM quarks complete.
+   * Class SM gauge bosons complete.
+#
+# Parameter definitions
+#
+
+   * All parameters are ok.
+

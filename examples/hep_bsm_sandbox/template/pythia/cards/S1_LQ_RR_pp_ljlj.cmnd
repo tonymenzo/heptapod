@@ -1,0 +1,11 @@
+#------------------------------------------------------------
+# Example: pp_S1S1d_ljlj.cmnd
+# Minimal Pythia8 run card to shower LHE events from MadGraph
+#------------------------------------------------------------
+
+# Beam and input setup
+Beams:frameType = 4
+Beams:LHEF      = [[LHEF_PATH]]
+
+# Quiet output
+Print:quiet = on
