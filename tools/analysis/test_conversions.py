@@ -54,6 +54,9 @@ def test_path_traversal_prevention():
     """Test that path traversal attempts are rejected (critical security test)."""
     print(">> Testing path traversal prevention (security)...\n")
 
+    # Create base directory for security tests
+    Path(base_directory).mkdir(parents=True, exist_ok=True)
+
     # Test 1: EventJSONLToNumpyTool - jsonl_path traversal
     tool = EventJSONLToNumpyTool(
         base_directory=base_directory,
