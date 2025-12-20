@@ -1,7 +1,7 @@
 # **HEPTAPOD**
 
 ---
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python](https://img.shields.io/badge/Python-3.12%20|%203.13-blue.svg)](https://www.python.org/downloads/)
 [![Framework](https://img.shields.io/badge/Framework-Orchestral--AI-green.svg)](https://orchestral-ai.com)
 
@@ -39,50 +39,20 @@ The design and philosophy of HEPTAPOD are described in detail in the accompanyin
 ```bash
 heptapod/
 ├── tools/                       # Physics tools for event generation and analysis
-│   ├── __init__.py
-│   ├── README.md                # Tool documentation
 │   ├── feynrules/               # FeynRules → UFO model generation
-│   │   ├── __init__.py
-│   │   ├── feynrules.py
-│   │   ├── UFO_generator.wl
-│   │   ├── UFO_generator.nb
-│   │   └── test_feynrules.py
 │   ├── mg5/                     # MadGraph parton-level event generation
-│   │   ├── __init__.py
-│   │   ├── mg5.py
-│   │   └── test_mg5.py
 │   ├── pythia/                  # Pythia hadronization and showering
-│   │   ├── __init__.py
-│   │   ├── pythia.py
-│   │   └── test_pythia.py
-│   └── analysis/                # Data conversion and analysis utilities
-│       ├── conversions.py
-│       ├── kinematics.py
-│       ├── kinematics_example.py
-│       ├── reconstruction.py
-│       ├── test_conversions.py
-│       ├── test_kinematics.py
-│       ├── test_reconstruction.py
-│       └── test_delta_r_filter.py
-├── examples/                    # Example workflows and demo applications
-│   ├── hep_bsm_demo.py          # Full BSM workflow demo
-│   ├── sandbox_utils.py         # Sandbox management utilities
-│   ├── hep_bsm_sandbox/         # Working directories (created at runtime)
+│   └── analysis/                # Data conversion and kinematics tools
+├── llm/                         # LLM utilities and Ollama integration
+│   ├── utils.py                 # Helper functions (get_ollama, etc.)
+│   └── test_ollama_*.py         # Ollama integration tests
+├── examples/                    # Example workflows and demos
+│   ├── hep_bsm_demo.py          # Main demo application
 │   └── todos/                   # Example task lists
-│       └── s1_lq/
-│           └── todos_s1_lq.md
-├── prompts/                     # System prompts for LLM orchestration
-│   ├── __init__.py
-│   └── demos/
-│       └── hep_bsm/
-│           └── system/
-│               ├── hep_bsm_evt_gen_explorer_prompt.md
-│               ├── hep_bsm_evt_gen_plan_prompt.md
-│               └── hep_bsm_evt_gen_todo_prompt.md
-├── config.py                    # Configuration for external tool paths
+├── prompts/                     # System prompts for agent orchestration
+├── config.py                    # Configuration (Ollama + external tool paths)
 ├── test_runner.py               # Master test runner
-├── requirements.txt             # Python dependencies (pip)
-└── environment.yml              # Conda environment specification
+└── requirements.txt             # Python dependencies
 ```
 
 ---
@@ -92,8 +62,11 @@ heptapod/
 ### Prerequisites
 
 **Required:**
-- **Python 3.12 or 3.13** (3.14+ not supported due to pythia8mc)
-- **At least one LLM provider** (Anthropic Claude, OpenAI GPT, Google Gemini, Groq, or local Ollama)
+
+- **Python 3.12 or 3.13** (3.14+ not supported for some dependencies)
+- **At least one LLM provider:**
+  - **Cloud LLMs**: Anthropic Claude, OpenAI GPT, Google Gemini, or Groq (requires API key)
+  - **Local LLMs**: Ollama (free, runs locally, no API key needed)
 
 ### Quick Start
 
@@ -126,7 +99,11 @@ conda env create -f environment.yml
 conda activate heptapod
 ```
 
-**3. Configure API Keys**
+**3. Configure LLM Provider**
+
+You have two options for LLM access:
+
+**Option A: Cloud LLMs (requires API key)**
 
 A `.env` template file is included in the repository. Edit it to add your API keys:
 
@@ -143,7 +120,7 @@ nvim .env
 emacs .env
 ```
 
-The template includes placeholders for all supported LLM providers:
+The template includes placeholders for all supported cloud providers:
 
 ```bash
 # Anthropic (Claude) - https://console.anthropic.com/
@@ -161,11 +138,32 @@ GROQ_API_KEY=your_groq_api_key_here
 # Note: You only need to set API keys for the providers you plan to use
 ```
 
-**Alternatively**, use local models (no API key needed):
-```bash
-# Add to .env for local Ollama models
-OLLAMA_ENDPOINT=http://localhost:11434
+**Option B: Local Ollama (free, no API key needed)**
+
+If Ollama is not already installed/running:
+
+1. Download from [ollama.com](https://ollama.com/download)
+2. Start the server: `ollama serve` (or use the macOS app)
+3. Pull a model: `ollama pull gpt-oss:20b`
+
+Configure in `config.py` (at the top of the file):
+
+```python
+# Ollama LLM Configuration
+ollama_host = None              # Use local Ollama (default port 11434)
+ollama_model = "gpt-oss:20b"    # Your preferred model
+
+# For remote Ollama server:
+# ollama_host = "http://SERVER_IP:11434"
 ```
+
+Test Ollama integration:
+
+```bash
+python test_runner.py --only llm
+```
+
+For more details on Ollama configuration and testing, see [llm/README.md](llm/README.md).
 
 **4. Verify Installation**
 
@@ -176,8 +174,10 @@ python test_runner.py --only prereqs
 This checks:
 - Python version (3.12 or 3.13)
 - `orchestral-ai` installation
-- API keys configuration
+- LLM availability (API keys OR Ollama)
 - Project structure
+
+**Note:** You need at least one working LLM (either API keys in `.env` OR Ollama running) to pass prerequisites.
 
 ### External Dependencies
 
@@ -266,6 +266,7 @@ python test_runner.py --skip-slow
 
 # Run only specific components
 python test_runner.py --only prereqs
+python test_runner.py --only llm
 python test_runner.py --only conversions
 python test_runner.py --only kinematics
 python test_runner.py --only reconstruction
@@ -283,17 +284,45 @@ python test_runner.py --only pythia
 
 The fastest way to get started is to run the demo with the web UI. This lets you describe physics goals in natural language, watch the agent execute multi-step workflows, and see real-time tool execution.
 
-**Choose an operating mode** by editing `examples/hep_bsm_demo.py`:
+**Configure the demo** by editing `examples/hep_bsm_demo.py`:
 
-- **`explorer`** - Interactive exploration and analysis (recommended for first run)
-- **`plan`** - Agent creates its own execution plan
-- **`todo`** - Uses predefined task list from `todos.md`
+1. **Select your LLM** (lines 200-224):
+   ```python
+   # ===== Cloud LLM Providers (requires API key in .env) =====
+   # Option 1: OpenAI GPT (default)
+   LLM = GPT()
+
+   # Option 2: Anthropic Claude
+   #LLM = Claude()
+
+   # Option 3: Google Gemini
+   #LLM = Gemini()
+
+   # Option 4: Groq
+   #LLM = Groq()
+
+   # ===== Local/Remote Ollama (configured in config.py) =====
+   # Option 5: Ollama (uses config.py settings)
+   #LLM = get_ollama()
+
+   # Option 8: Ollama with reasoning mode
+   #LLM = get_reasoning_ollama()
+   ```
+
+2. **Choose an operating mode**:
+   - **`explorer`** - Interactive exploration and analysis (recommended for first run)
+   - **`plan`** - Agent creates its own execution plan
+   - **`todo`** - Uses predefined task list from `todos.md`
+
+3. **Set configuration variables**:
+   ```python
+   CREATE_NEW_SANDBOX = True
+   MODE = "explorer"  # or "plan" or "todo"
+   ```
+
+**Run the demo:**
 
 ```bash
-# Edit examples/hep_bsm_demo.py to set:
-# CREATE_NEW_SANDBOX = True
-# MODE = "explorer"  # or "plan" or "todo"
-
 python examples/hep_bsm_demo.py
 ```
 
@@ -345,11 +374,15 @@ For detailed tool documentation and API reference, see [tools/README.md](tools/R
 If you use HEPTAPOD in your research, please cite:
 
 ```bibtex
-@misc{heptapod2025,
-  title={HEPTAPOD: Orchestrating High-Energy-Workflows Towards Autonomous Agency},
-  author={Tony Menzo, Alexander Roman, Sergei Gleyzer, Konstantin Matchev, George T. Fleming, Stefan H\"{o}che, Stephen Mrenna, Prasanth Shyamsundar},
-  year={2025},
-  eprint="2512.15867"
+@article{Menzo:2025cim,
+    author = {Menzo, Tony and Roman, Alexander and Gleyzer, Sergei and Matchev, Konstantin and Fleming, George T. and H{\"o}che, Stefan and Mrenna, Stephen and Shyamsundar, Prasanth},
+    title = "{HEPTAPOD: Orchestrating High Energy Physics Workflows Towards Autonomous Agency}",
+    eprint = "2512.15867",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-ph",
+    reportNumber = "FERMILAB-PUB-25-0923-CSAID-ETD-T",
+    month = "12",
+    year = "2025"
 }
 ```
 
@@ -357,23 +390,27 @@ If you use HEPTAPOD in your research, please cite:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Contact
 
 **Maintainers:**
+
 - Tony Menzo - amenzo@ua.edu
 
 **Issues and Support:**
+
 - GitHub Issues: [https://github.com/tonymenzo/heptapod/issues](https://github.com/tonymenzo/issues)
 
 **Project Links:**
+
 - Repository: [https://github.com/tonymenzo/heptapod](https://github.com/tonymenzo/heptapod)
 - Research Paper: [arXiv:2512.15867](https://arxiv.org/abs/2512.15867)
 
 ---
 
 **Version**: 1.0.0
+
 **Status**: Active Development
