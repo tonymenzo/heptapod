@@ -55,9 +55,10 @@ heptapod/
 │   │   ├── __init__.py
 │   │   ├── pythia.py
 │   │   └── test_pythia.py
-│   ├── sherpa/                  # Sherpa event generation
+│   ├── sherpa/                  # Sherpa event generation and ufo conversion
 │   │   ├── __init__.py
 │   │   ├── sherpa.py
+│   │   ├── generate_model.py
 │   │   └── test_sherpa.py
 │   └── analysis/                # Data conversion and analysis utilities
 │       ├── conversions.py
