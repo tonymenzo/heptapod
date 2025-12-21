@@ -321,6 +321,40 @@ def test_finals_only_filtering():
     return {"status": "ok"}
 
 
+def test_edit_sherpa_card():
+    """Test the _edit_sherpa_card function for replacing LHE paths."""
+    print(">> Testing run preparation for Sherpa ...\n")
+
+    # Sample template card with LHE input
+    template = """
+BEAMS: 2212
+BEAM_ENERGIES: 6500
+MI_HANDLER: None
+ME_GENERATORS: [ Comix ]
+FRAGMENTATION: Off
+PARTICLE_DATA:
+    9000005: {Width: 0}
+PROCESSES:
+- 93 93 -> 9000005[a] -9000005[b]:
+    Decay: 9000005[a] -> 11 2
+    Decay: -9000005[b] -> -11 -2
+"""
+
+    # Test 1: Prepare UFO for use with Sherpa
+    ufo_test_path = 'tools/feynrules/test_files/models/S1_LQ_RR_UFO_nb'
+    import shutil
+    if os.path.exists(ufo_test_path+'/.sherpa'):
+        shutil.rmtree(ufo_test_path+'/.sherpa')
+    edited = _edit_sherpa_card(template, ufo_path=ufo_test_path)
+    if edited == None:
+        print(f"[✗] UFO conversion failed")
+        return False
+    print("[✓] Test passed: UFO conversion")
+
+    print("\nAll run preparation tests passed! [✓]\n")
+    return True
+
+
 def test_event_generation(verbose=False):
     """Test Sherpa event generation from run card."""
     print(">> Testing Sherpa event generation...\n")
@@ -460,6 +494,12 @@ if __name__ == "__main__":
         all_passed = False
 
     # Integration tests
+    try:
+        test_edit_sherpa_card()
+    except (AssertionError, Exception) as e:
+        print(f"\n[✗] test_edit_sherpa_card failed: {e}\n")
+        all_passed = False
+
     evt_output = test_event_generation(verbose=args.verbose)
     if evt_output is None:
         all_passed = False

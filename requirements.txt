@@ -51,6 +51,7 @@ graphviz>=0.21           # Graph visualization
 python-dotenv>=1.2.1     # Environment variable management
 pyyaml>=6.0.3            # YAML parsing
 invoke>=2.2.1            # Task execution
+sympy>=1.14.0            # UFO conversion
 
 # Development Tools (Optional)
 # =============================

@@ -61,17 +61,13 @@ def _event_to_dict(blobs: Any, finals_only: bool, full_history: bool) -> Dict[st
     return {"n": len(parts), "particles": parts}
 
 
-def _edit_sherpa_card(
-    card_text: str,
-    *,
-    lhe_path: Optional[str] = None
-) -> str:
+def _edit_sherpa_card(card_text: str,*,ufo_path: Optional[str] = None) -> str:
     """
-    Edit Sherpa command card by replacing specific lines.
+    Prepare Sherpa run by converting UFO and editing run card.
 
     Parameters:
         card_text: Original .yaml file content
-        lhe_path: Path to LHE file (replaces line starting with 'Beams:LHEF =')
+        ufo_path: If provided, runs the ufo model converter
 
     Returns:
         Modified card text with replacements applied
@@ -80,9 +76,30 @@ def _edit_sherpa_card(
     output_lines = []
 
     for line in lines:
-        stripped = line.strip()
         # Keep original line
         output_lines.append(line)
+
+    import os
+    if ufo_path != None:
+        model_name = os.path.basename(ufo_path.strip('/'))
+        output_lines.append('MODEL: '+model_name)
+        output_lines.append('UFO_PARAM_CARD: param_'+model_name+'.dat')
+        if not os.path.isdir(ufo_path+'.sherpa'):
+            import sys, Sherpa
+            sherpa_base_dir = os.path.dirname(Sherpa.__file__)
+            sys.path.append(sherpa_base_dir)
+            local_argv = []
+            local_argv.append('--root_dir')
+            local_argv.append(sherpa_base_dir+'/share/SHERPA-MC')
+            local_argv.append('--install_dir')
+            if os.path.isdir(sherpa_base_dir+'/lib/SHERPA-MC'):
+                local_argv.append(sherpa_base_dir+'/lib/SHERPA-MC')
+            if os.path.isdir(sherpa_base_dir+'/lib64/SHERPA-MC'):
+                local_argv.append(sherpa_base_dir+'/lib64/SHERPA-MC')
+            local_argv.append('--auto_convert')
+            local_argv.append(ufo_path)
+            from ufo_interface.parser import main
+            main(local_argv)
 
     result = "\n".join(output_lines)
     # Preserve trailing newline if original had one
@@ -101,28 +118,19 @@ class SherpaFromRunCardTool(BaseTool):
     Inputs (runtime):
       - data_dir: relative output directory under base_directory where run artifacts will be stored
       - cmnd_path: relative path to a valid Sherpa3 .yaml configuration file
+      - ufo_path: If provided, defines the location of the UFO model
       - n_events: number of events to generate
       - seed: optional integer random seed (if omitted, Sherpa's internal RNG is used)
       - finals_only: if True, record only final-state particles (status==1)
       - full_history: if True, include intermediate particles and mother indices in the JSONL output
-      - shower_lhe: if True, use Sherpa for showering/hadronization of LHE events (requires lhe_path)
-      - lhe_path: path to LHE file (required when shower_lhe=True, optional otherwise)
       - base_directory: sandbox root for all file operations
 
     Behavior:
       1. Copy the provided .yaml file into the output directory for provenance.
-      2. If lhe_path is provided, automatically edit the run card to inject the LHE path.
-      3. Initialize Sherpa3 with optional fixed seed.
-      4. Generate n_events events; for each successful event, record a structured event record.
-      5. Write results to events.jsonl using schema "evtjsonl-1.0", with one JSON object per event.
-      6. Report a summary containing output paths, number of accepted events, and cross-section data.
-
-    LHE Showering Mode:
-      When shower_lhe=True, Sherpa is used for showering/hadronization of pre-generated
-      LHE events rather than standalone event generation. In this mode:
-        - lhe_path is REQUIRED and specifies the path to the input LHE file
-        - The tool automatically edits the run card to inject the LHE path (replaces 'Beams:LHEF' line)
-        - Sherpa adds parton showering and hadronization to matrix-element level events
+      2. Initialize Sherpa3 with optional fixed seed.
+      3. Generate n_events events; for each successful event, record a structured event record.
+      4. Write results to events.jsonl using schema "evtjsonl-1.0", with one JSON object per event.
+      5. Report a summary containing output paths, number of accepted events, and cross-section data.
 
     Output (JSON):
       {
@@ -154,12 +162,11 @@ class SherpaFromRunCardTool(BaseTool):
     # --------------------------- Runtime fields --------------------------- #
     data_dir: str = RuntimeField(description="Relative output directory for dataset, e.g. 'data/run001'")
     cmnd_path: str = RuntimeField(description="Relative path to Sherpa .yaml run card template")
+    ufo_path: str = RuntimeField(description="UFO model directory")
     n_events: int = RuntimeField(description="Number of events to generate")
     seed: Optional[int] = RuntimeField(default=None, description="Random seed (optional)")
     finals_only: bool = RuntimeField(default=True, description="Keep only final-state particles if true")
     full_history: bool = RuntimeField(default=False, description="Include lineage indices if true")
-    shower_lhe: bool = RuntimeField(default=False, description="If True, use Sherpa for showering/hadronization of LHE events (requires lhe_path)")
-    lhe_path: Optional[str] = RuntimeField(default=None, description="Path to LHE file for showering/hadronization (required when shower_lhe=True)")
     # ---------------------------------------------------------------------- #
 
     # ---------------------------- State fields ---------------------------- #
@@ -190,14 +197,6 @@ class SherpaFromRunCardTool(BaseTool):
                     suggestion="Provide required runtime fields"
                 )
 
-        # Validate shower_lhe mode requirements.
-        if self.shower_lhe and not self.lhe_path:
-            return self.format_error(
-                error="Missing Parameter",
-                reason="lhe_path is required when shower_lhe=True",
-                suggestion="Provide lhe_path for LHE showering mode or set shower_lhe=False"
-            )
-
         outdir = self._safe_path(self.data_dir)
         cmnd_src = self._safe_path(self.cmnd_path)
 
@@ -219,25 +218,6 @@ class SherpaFromRunCardTool(BaseTool):
                 suggestion="Provide a valid .cmnd file path"
             )
 
-        # Validate and resolve LHE path if provided.
-        lhe_path_abs = None
-        if self.lhe_path:
-            lhe_path_abs = self._safe_path(self.lhe_path)
-            if not lhe_path_abs:
-                return self.format_error(
-                    error="Access Denied",
-                    reason="lhe_path escapes base_directory",
-                    context=f"lhe_path={self.lhe_path}",
-                    suggestion="Use paths inside the allowed base directory"
-                )
-            if not os.path.exists(lhe_path_abs):
-                return self.format_error(
-                    error="File Not Found",
-                    reason="LHE file does not exist",
-                    context=f"path={self.lhe_path}",
-                    suggestion="Provide a valid LHE file path"
-                )
-
         # Create output directory.
         os.makedirs(outdir, exist_ok=True)
         cmnd_dst = os.path.join(outdir, "Sherpa.yaml")
@@ -258,7 +238,7 @@ class SherpaFromRunCardTool(BaseTool):
         # Note: n_events doesn't go in the Sherpa card; it's controlled by the loop.
         # The seed parameter passed to sherpa.readString() below takes precedence.
         # Pass absolute path to _edit_sherpa_card so Sherpa can find the LHE file.
-        card_text = _edit_sherpa_card(card_text, lhe_path=lhe_path_abs)
+        card_text = _edit_sherpa_card(card_text, ufo_path=self.ufo_path)
 
         # Write modified card to output directory.
         try:
@@ -365,13 +345,12 @@ class SherpaFromRunCardTool(BaseTool):
             "schema": SCHEMA_VERSION,
             "created_utc": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat(),
             "inputs": {
-                "run_card": "run.cmnd",
+                "run_card": "Sherpa.yaml",
                 "n_events_requested": int(self.n_events),
                 "seed": int(self.seed) if self.seed is not None else None,
                 "finals_only": bool(self.finals_only),
                 "full_history": bool(self.full_history),
-                "shower_lhe": bool(self.shower_lhe),
-                **({"lhe_path": self.lhe_path} if self.lhe_path else {}),
+                **({"ufo_path": self.ufo_path} if self.ufo_path else {}),
             },
             "outputs": {
                 "events_jsonl": "events.jsonl",
