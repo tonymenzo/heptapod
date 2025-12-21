@@ -42,10 +42,16 @@ from tools.feynrules import FeynRulesToUFOTool
 # Try to import config for configuration
 try:
     from config import feynrules_path, wolframscript_path
+    # Check if paths are still at default placeholder values
+    config_is_incomplete = (
+        feynrules_path == "/path/to/FeynRules" or
+        wolframscript_path == "/path/to/wolframscript"
+    )
 except ImportError:
-    # Fallback to defaults if config doesn't exist
+    # Fallback to environment variables if config doesn't exist
     feynrules_path = os.environ.get("FEYNRULES_PATH", "/usr/local/FeynRules")
     wolframscript_path = os.environ.get("WOLFRAMSCRIPT_PATH", "wolframscript")
+    config_is_incomplete = False  # Using env vars or defaults is acceptable
 
 # Initialize base directory
 base_directory = str(FEYNRULES_DIR / "test_files")
@@ -334,9 +340,19 @@ if __name__ == "__main__":
         all_passed = False
 
     ufo_result = test_ufo_generation(verbose=args.verbose)
-    # Note: UFO generation is optional (skipped if Mathematica not available)
+    # Note: UFO generation test can be skipped if dependencies not available
     # ufo_result: True = passed, False = failed, None = skipped
     if ufo_result is False:
+        all_passed = False
+    elif ufo_result is None and config_is_incomplete:
+        # If test was skipped due to incomplete config, fail the overall suite
+        missing_paths = []
+        if feynrules_path == "/path/to/FeynRules":
+            missing_paths.append("feynrules_path")
+        if wolframscript_path == "/path/to/wolframscript":
+            missing_paths.append("wolframscript_path")
+        print(f"[✗] Test suite failed: {' and '.join(missing_paths)} not configured in config.py")
+        print(f"    Please set the correct path(s) in config.py\n")
         all_passed = False
 
     # Cleanup test files unless --keep-files flag is set
