@@ -27,9 +27,9 @@ from pathlib import Path
 
 # Path setup
 SCRIPT_PATH = Path(__file__).resolve()
-PYTHIA_DIR = SCRIPT_PATH.parent                               # .../heptapod-dev/tools/pythia
-TOOLS_DIR = PYTHIA_DIR.parent                                 # .../heptapod-dev/tools
-REPO_ROOT = TOOLS_DIR.parent                                  # .../heptapod-dev
+PYTHIA_DIR = SCRIPT_PATH.parent                               # .../heptapod/tools/pythia
+TOOLS_DIR = PYTHIA_DIR.parent                                 # .../heptapod/tools
+REPO_ROOT = TOOLS_DIR.parent                                  # .../heptapod
 
 # Add repository root to path for local imports (prompts, tools, etc.)
 sys.path.insert(0, str(REPO_ROOT))

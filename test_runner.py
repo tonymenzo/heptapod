@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 """
-# test_runner.py is a part of the HEPTAPOD package.
-# Copyright (C) 2025 HEPTAPOD authors (see AUTHORS for details).
-# HEPTAPOD is licensed under the GNU GPL v3 or later, see LICENSE for details.
-# Please respect the MCnet Guidelines, see GUIDELINES for details.
-"""
-"""
 Comprehensive test runner for all HEPTAPOD tools.
 
 This script runs unit tests for:
+- LLM utilities (Ollama integration, local and remote connections)
 - Data conversion tools (LHE to JSONL, JSONL to NumPy)
 - Analysis tools (kinematics, event selection, plotting)
 - FeynRules tools (UFO generation)
@@ -16,9 +11,10 @@ This script runs unit tests for:
 - Pythia tools (event generation, jet clustering, card editing)
 
 Usage:
-    python run_all_tests.py              # Run all tests
-    python run_all_tests.py --verbose    # Run with verbose output
-    python run_all_tests.py --skip-slow  # Skip slow integration tests
+    python test_runner.py                # Run all tests
+    python test_runner.py --verbose      # Run with verbose output
+    python test_runner.py --skip-slow    # Skip slow integration tests
+    python test_runner.py --only llm     # Run only LLM tests
 """
 
 import sys
@@ -53,11 +49,14 @@ def check_prerequisites():
     Check that all prerequisites are met before running tests.
 
     Returns:
-        True if all prerequisites met, False otherwise
+        Tuple of (all_ok: bool, has_ollama: bool)
+        - all_ok: True if all prerequisites met, False otherwise
+        - has_ollama: True if Ollama is available and running
     """
     print_section("Checking Prerequisites")
 
     all_ok = True
+    has_ollama = False
 
     # Check Python version (3.12 or 3.13)
     version_info = sys.version_info
@@ -90,8 +89,11 @@ def check_prerequisites():
         print(f"   Please install: pip install orchestral-ai")
         all_ok = False
 
-    # Check .env file and API keys/endpoints
-    print("\n>> Checking .env file and LLM configuration...")
+    # Check LLM availability (need at least one: API keys OR Ollama)
+    print("\n>> Checking LLM configuration...")
+
+    # First, check for API keys in .env
+    has_api_keys = False
     env_file = REPO_ROOT / ".env"
     if env_file.exists():
         print(f"   [✓] .env file found")
@@ -153,18 +155,11 @@ def check_prerequisites():
                         found_endpoints.append(endpoint)
                     break
 
-        if not found_keys and not found_endpoints:
-            print(f"   [✗] No valid API keys or local endpoints found in .env")
-            print(f"   You'll need at least one of:")
-            print(f"     - API key: OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, etc.")
-            print(f"     - Local endpoint: OLLAMA_ENDPOINT (e.g., http://localhost:11434)")
-            all_ok = False
-        elif not found_keys and found_endpoints:
+        has_api_keys = len(found_keys) > 0 or len(found_endpoints) > 0
+        if has_api_keys and not found_keys:
             print(f"   [i] Using local LLM endpoints only (no cloud API keys found)")
     else:
-        print(f"   [✗] .env file not found")
-        print(f"   Create .env with your API keys or local LLM endpoints for LLM access")
-        all_ok = False
+        print(f"   [i] .env file not found (checking for Ollama as alternative)")
 
     # Check config.py
     print("\n>> Checking config.py...")
@@ -176,9 +171,63 @@ def check_prerequisites():
         print(f"   Please create config.py with paths to FeynRules, MG5, etc.")
         all_ok = False
 
+    # Check Ollama availability (can substitute for API keys)
+    print("\n>> Checking Ollama availability...")
+    ollama_available = False
+    try:
+        result = subprocess.run(
+            ['ollama', '--version'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0:
+            version = result.stdout.strip()
+            print(f"   [✓] Ollama found: {version}")
+
+            # Check if Ollama server is running
+            try:
+                result = subprocess.run(
+                    ['curl', '-s', 'http://localhost:11434/api/tags'],
+                    capture_output=True,
+                    text=True,
+                    timeout=2
+                )
+                if result.returncode == 0:
+                    print(f"   [✓] Ollama server is running")
+                    ollama_available = True
+                else:
+                    print(f"   [i] Ollama installed but server not running (start with: ollama serve)")
+            except Exception:
+                print(f"   [i] Ollama installed but server not running (start with: ollama serve)")
+        else:
+            print(f"   [i] Ollama not found")
+    except FileNotFoundError:
+        print(f"   [i] Ollama not found")
+    except Exception as e:
+        print(f"   [i] Could not check Ollama: {e}")
+
+    has_ollama = ollama_available
+
+    # Verify at least one LLM option is available
+    print("\n>> Verifying LLM availability...")
+    if has_api_keys or has_ollama:
+        if has_api_keys and has_ollama:
+            print(f"   [✓] Multiple LLM options available (API keys + Ollama)")
+        elif has_api_keys:
+            print(f"   [✓] LLM access via API keys")
+        else:
+            print(f"   [✓] LLM access via Ollama")
+    else:
+        print(f"   [✗] No LLM available!")
+        print(f"   You need at least one of:")
+        print(f"     Option 1: API keys in .env (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.)")
+        print(f"     Option 2: Ollama installed and running (ollama serve)")
+        all_ok = False
+
     # Check essential directories
     print("\n>> Checking project structure...")
-    essential_dirs = ['prompts', 'tools', 'examples']
+    essential_dirs = ['prompts', 'tools', 'examples', 'llm']
     for dir_name in essential_dirs:
         dir_path = REPO_ROOT / dir_name
         if dir_path.exists():
@@ -193,7 +242,7 @@ def check_prerequisites():
     else:
         print("[✗] Some prerequisites missing - please address issues above\n")
 
-    return all_ok
+    return all_ok, has_ollama
 
 def run_test_script(script_path, verbose=False, keep_files=False, description=None):
     """
@@ -261,7 +310,7 @@ def main():
     )
     parser.add_argument(
         "--only",
-        choices=["prereqs", "conversions", "kinematics", "reconstruction", "delta_r_filter", "feynrules", "mg5", "pythia", "sherpa"],
+        choices=["prereqs", "conversions", "kinematics", "reconstruction", "delta_r_filter", "feynrules", "mg5", "pythia", "sherpa", "llm"],
         help="Run only tests for specified component (prereqs = prerequisites check only)"
     )
     parser.add_argument(
@@ -276,9 +325,11 @@ def main():
 
     # Check prerequisites first (unless skipped or not in --only)
     run_prereqs = not args.skip_prereq and (not args.only or args.only == "prereqs")
+    ollama_was_available = False
 
     if run_prereqs:
-        if not check_prerequisites():
+        prereqs_ok, ollama_was_available = check_prerequisites()
+        if not prereqs_ok:
             print("[✗] Prerequisites check failed. Fix issues above or use --skip-prereq to continue anyway.\n")
             sys.exit(1)
 
@@ -289,6 +340,10 @@ def main():
     # Define test scripts
     # NOTE: Order matters! conversions must run before mg5/pythia (which depend on data conversion tools)
     test_suites = {
+        "llm": {
+            "script": REPO_ROOT / "llm" / "test_ollama_basic.py",
+            "description": "LLM utilities (Ollama integration, local and remote connections)"
+        },
         "conversions": {
             "script": REPO_ROOT / "tools" / "analysis" / "test_conversions.py",
             "description": "Data conversion tools (LHE to JSONL, JSONL to NumPy, schema validation)"
@@ -331,11 +386,20 @@ def main():
         # Skip if --only specified and this isn't it
         if args.only and args.only != component:
             continue
-
         # Skip slow tests if requested (utils is fast, so don't skip it)
         if args.skip_slow and component in ["feynrules", "mg5", "pythia", "sherpa"]:
             print(f"⊘ Skipping {component} tests (--skip-slow)\n")
             continue
+
+        # Handle LLM tests based on what was detected in prerequisites
+        if component == "llm" and not args.only:
+            # If Ollama was available during prereqs, run the test (it should pass)
+            # If Ollama was NOT available during prereqs, skip the test gracefully
+            if not ollama_was_available:
+                print(f"⊘ Skipping {component} tests (no Ollama detected in prerequisites)\n")
+                print(f"   To enable: Install Ollama and run 'ollama serve'\n")
+                continue
+            # Otherwise, run the test - it should pass since Ollama was available
 
         script_path = config["script"]
         description = config["description"]

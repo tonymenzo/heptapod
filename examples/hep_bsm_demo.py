@@ -1,3 +1,10 @@
+"""
+# hep_bsm_demo.py is a part of the HEPTAPOD package.
+# Copyright (C) 2025 HEPTAPOD authors (see AUTHORS for details).
+# HEPTAPOD is licensed under the GNU GPL v3 or later, see LICENSE for details.
+# Please respect the MCnet Guidelines, see GUIDELINES for details.
+"""
+
 # Setup repository path for imports
 import sys
 from pathlib import Path
@@ -105,9 +112,39 @@ hooks = [
     TruncateOutputHook(max_length=10000),
 ]
 
-# Default LLM.
-#LLM = Claude()
+# Default LLM - Choose one:
+
+# ============================================================ #
+# ====== Cloud LLM Providers (requires API key in .env) ====== #
+# ============================================================ #
+
+# Option 1: OpenAI GPT
 LLM = GPT()
+
+# Option 2: Anthropic Claude
+#LLM = Claude()
+
+# Option 3: Google Gemini
+#LLM = Gemini()
+
+# Option 4: Groq
+#LLM = Groq()
+
+# ============================================================ #
+# ======= Local/Remote Ollama (configured in config.py) ====== #
+# ============================================================ #
+
+# Option 5: Ollama (uses config.py settings for model and host)
+#LLM = get_ollama()
+
+# Option 6: Ollama with model override
+#LLM = get_ollama(model='gpt-oss:120b')
+
+# Option 7: Ollama with host override (advanced - prefer config.py)
+#LLM = get_ollama(host='http://SERVER_IP:11434')
+
+# Option 8: Ollama with reasoning mode (for models like gpt-oss:20b)
+#LLM = get_reasoning_ollama()
 
 # Create agent.
 agent = Agent(llm=LLM,

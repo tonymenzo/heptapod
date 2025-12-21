@@ -32,9 +32,9 @@ def load_prompt(filename: str) -> str:
 
 
 # Convenient pre-loaded prompts
-HEP_BSM_EVT_GEN_TODO_PROMPT = load_prompt('demos/hep_bsm/system/hep_bsm_evt_gen_todo_prompt.md')
-HEP_BSM_EVT_GEN_PLAN_PROMPT = load_prompt('demos/hep_bsm/system/hep_bsm_evt_gen_plan_prompt.md')
-HEP_BSM_EVT_GEN_EXPLORER_PROMPT = load_prompt('demos/hep_bsm/system/hep_bsm_evt_gen_explorer_prompt.md')
+HEP_BSM_EVT_GEN_TODO_PROMPT = load_prompt('examples/hep_bsm/system/hep_bsm_evt_gen_todo_prompt.md')
+HEP_BSM_EVT_GEN_PLAN_PROMPT = load_prompt('examples/hep_bsm/system/hep_bsm_evt_gen_plan_prompt.md')
+HEP_BSM_EVT_GEN_EXPLORER_PROMPT = load_prompt('examples/hep_bsm/system/hep_bsm_evt_gen_explorer_prompt.md')
 
 
 __all__ = ['load_prompt', 'HEP_BSM_EVT_GEN_TODO_PROMPT', 'HEP_BSM_EVT_GEN_PLAN_PROMPT', 'HEP_BSM_EVT_GEN_EXPLORER_PROMPT']

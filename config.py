@@ -4,6 +4,22 @@
 # HEPTAPOD is licensed under the GNU GPL v3 or later, see LICENSE for details.
 # Please respect the MCnet Guidelines, see GUIDELINES for details.
 """
+
+# ============================================================ #
+# ================== Ollama LLM Configuration ================ #
+# ============================================================ #
+
+# For local Ollama, use None (default)
+# For remote Ollama server, set to "http://SERVER_IP:11434"
+ollama_host = None  # None = localhost:11434 (default)
+
+# Default Ollama model to use
+ollama_model = "gpt-oss:20b"  # Change to your preferred model
+
+# ============================================================ #
+# =================== External dependencies ================== #
+# ============================================================ #
+
 # FeynRules PATH.
 # Example: "/path/to/FeynRules_v2.3.49"
 feynrules_path = "/path/to/FeynRules"
