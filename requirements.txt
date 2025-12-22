@@ -11,6 +11,7 @@ orchestral-ai>=1.2.1
 anthropic>=0.75.0        # Claude API
 openai>=2.13.0           # GPT API
 google-generativeai>=0.8.6  # Gemini API (optional)
+google-api-core>=2.0.0   # Required by google-generativeai
 ollama>=0.6.1            # Local models (optional)
 groq>=1.0.0              # Groq API (optional)
 mistralai>=1.10.0        # Mistral API (optional)
