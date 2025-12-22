@@ -17,14 +17,18 @@ sys.path.insert(0, str(REPO_ROOT))
 # ======================== IMPORTS ========================== #
 # =========================================================== #
 
+# Orchestral imports.
 from orchestral import Agent
 from orchestral.tools import (RunCommandTool, DummyRunCommandTool, WebSearchTool, RunPythonTool,
                               WriteFileTool, ReadFileTool, EditFileTool, FileSearchTool, FindFilesTool,
                               TodoWrite, TodoRead)
 from orchestral.tools.hooks import TruncateOutputHook, DangerousCommandHook, SafeguardHook, UserApprovalHook
-from orchestral.llm import GPT, Claude
 
+# LLM imports.
+from orchestral.llm import GPT, Claude, Gemini, Groq
+from llm import get_ollama, get_reasoning_ollama
 
+# Prompt and tool imports.
 from prompts import HEP_BSM_EVT_GEN_EXPLORER_PROMPT
 from tools.analysis.conversions import EventJSONLToNumpyTool, JetsJSONLToNumpyTool
 from tools.analysis.kinematics import (
@@ -42,7 +46,9 @@ from tools.analysis.reconstruction import ResonanceReconstructionTool
 from tools.feynrules import FeynRulesToUFOTool
 from tools.mg5 import MadGraphFromRunCardTool
 from tools.pythia import PythiaFromRunCardTool, JetClusterSlowJetTool
+from tools.sherpa import SherpaFromRunCardTool
 
+# Configuration imports.
 from config import feynrules_path, mg5_path, wolframscript_path
 
 print("Using FeynRules path:", feynrules_path)
@@ -84,6 +90,7 @@ tools = [
     MadGraphFromRunCardTool(base_directory=base_directory, mg5_path=mg5_path),
     PythiaFromRunCardTool(base_directory=base_directory),
     JetClusterSlowJetTool(base_directory=base_directory),
+    SherpaFromRunCardTool(base_directory=base_directory),
     # Data conversion tools.
     EventJSONLToNumpyTool(base_directory=base_directory),
     JetsJSONLToNumpyTool(base_directory=base_directory),
