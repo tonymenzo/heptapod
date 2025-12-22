@@ -1,3 +1,4 @@
+import functools
 
 __date__ = "6 March 2020"
 __author__ = 'olivier.mattelaer@uclouvain.be'
