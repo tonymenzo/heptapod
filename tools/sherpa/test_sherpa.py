@@ -342,7 +342,6 @@ PROCESSES:
 
     # Test 1: Prepare UFO for use with Sherpa
     ufo_test_path = 'tools/feynrules/test_files/models/S1_LQ_RR_UFO_nb'
-    import shutil
     if os.path.exists(ufo_test_path+'/.sherpa'):
         shutil.rmtree(ufo_test_path+'/.sherpa')
     edited = _edit_sherpa_card(template, ufo_path=ufo_test_path)

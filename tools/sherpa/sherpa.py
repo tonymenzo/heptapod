@@ -98,8 +98,8 @@ def _edit_sherpa_card(card_text: str,*,ufo_path: Optional[str] = None) -> str:
                 local_argv.append(sherpa_base_dir+'/lib64/SHERPA-MC')
             local_argv.append('--auto_convert')
             local_argv.append(ufo_path)
-            from ufo_interface.parser import main
-            main(local_argv)
+            import ufo_interface.parser
+            ufo_interface.parser.main(local_argv)
 
     result = "\n".join(output_lines)
     # Preserve trailing newline if original had one
