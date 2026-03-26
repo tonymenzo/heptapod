@@ -1,0 +1,38 @@
+# run_cards/dqm/dqm_training.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+# HEPTAPOD run card for the ML4DQM training pipeline.
+# Pass this file to the HEPTAPOD agent to execute the full
+# Fetch → Preprocess → Train sequence autonomously.
+# ─────────────────────────────────────────────────────────────────────────────
+
+pipeline: dqm_training
+
+fetch:
+  tool: CMSDQMFetchTool
+  subsystem: Pixel
+  run_start: 360000
+  run_end:   361000
+  max_runs:  500
+  dataset:   /Global/Online/ALL
+  output_dir: data/raw
+
+preprocess:
+  tool: DQMPreprocessorTool
+  input_jsonl:         data/raw/dqm_raw.jsonl
+  output_dir:          data/processed
+  n_bins:              64
+  drop_zero_fraction:  0.95
+
+train:
+  tool: DQMAutoencoderTrainTool
+  processed_npy:    data/processed/dqm_processed.npy
+  meta_json:        data/processed/dqm_meta.json
+  output_dir:       models
+  hidden_dim:       32
+  latent_dim:       8
+  epochs:           50
+  batch_size:       32
+  learning_rate:    0.001
+  threshold_sigma:  3.0
+  val_fraction:     0.1
+

@@ -1,0 +1,32 @@
+# run_cards/dqm/dqm_monitoring.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+# HEPTAPOD run card for real-time DQM monitoring + alert dispatch.
+# Requires a trained model from dqm_training.yaml to exist first.
+# ─────────────────────────────────────────────────────────────────────────────
+
+pipeline: dqm_monitoring
+
+monitor:
+  tool: DQMRealtimeMonitorTool
+  model_path:           models/dqm_autoencoder.pt
+  stream_jsonl:         data/raw/dqm_raw.jsonl   # replace with live stream path
+  output_dir:           monitoring
+  simulate_delay_ms:    0
+  threshold_multiplier: 1.0
+
+evaluate:
+  tool: DQMModelEvaluatorTool
+  model_path:  models/dqm_autoencoder.pt
+  eval_npy:    data/processed/dqm_processed.npy
+  eval_meta:   data/processed/dqm_meta.json
+  output_dir:  eval
+
+dispatch:
+  tool: DQMAlertDispatcherTool
+  alerts_jsonl:            monitoring/dqm_alerts.jsonl
+  output_dir:              monitoring
+  channels:                [console, file]
+  min_severity:            WARNING
+  max_alerts_per_dispatch: 50
+  # webhook_url: https://mattermost.cern.ch/hooks/YOUR_HOOK_ID
+

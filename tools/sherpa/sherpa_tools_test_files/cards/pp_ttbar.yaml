@@ -1,0 +1,20 @@
+# collider setup
+BEAMS: 2212
+BEAM_ENERGIES: 6500
+
+# decays
+HARD_DECAYS:
+  Enabled: true
+  Channels:
+    24,2,-1: {Status: 0}
+    24,4,-3: {Status: 0}
+    -24,-2,1: {Status: 0}
+    -24,-4,3: {Status: 0}
+
+# particle properties (width of external particles of the MEs must be zero)
+PARTICLE_DATA:
+  6: {Width: 0}
+
+PROCESSES:
+- 93 93 -> 6 -6:
+    Order: {QCD: 2, EW: 0}

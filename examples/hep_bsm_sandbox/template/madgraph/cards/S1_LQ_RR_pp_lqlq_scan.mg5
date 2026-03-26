@@ -1,0 +1,35 @@
+set automatic_html_opening False
+
+# Load the Standard Model UFO (built in)
+import model [[UFO_PATH]]
+
+# Define beam contents (proton = quarks + gluon)
+define p = g u c d s b u~ c~ d~ s~ b~
+
+display interactions
+
+# Define a simple process: top-pair production
+generate p p > S1 S1~, (S1 > e- u), (S1~ > e+ u~)
+
+# Specify where MG5 should write its output
+output [[MG5_OUTPUT]]
+
+# Launch the run
+launch
+
+# ---- Run configuration ----
+set nevents [[NEVENTS]]
+set iseed 12345
+set ebeam1 6500.0
+set ebeam2 6500.0
+
+# ---- Simplify environment ----
+set MS1 scan:[1000,1500,2000]
+set lhaid 0          # use internal PDFs (avoids LHAPDF)
+set cut_decays False # no cuts
+set ptj -1
+set ptl -1
+set etaj -1
+set drjj -1
+set drjl -1
+set drll -1
