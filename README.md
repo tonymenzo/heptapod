@@ -471,6 +471,18 @@ If you use HEPTAPOD in your research, please cite:
 ```
 
 ---
+## ML4DQM Extension
+
+A CMS Data Quality Monitoring tool suite is available in `ml4dqm/`
+(branch: `eren-ml4dqm-2026`):
+
+- `data/cms_data_loader.py` — Schema-validated CMS histogram data access
+- `models/anomaly_detector.py` — Anomaly detection (PyTorch/scikit-learn)
+- `validation/cross_validator.py` — Statistical consensus layer
+- `monitoring/realtime_monitor.py` — Real-time deployment pipeline
+- `agents/dqm_agent.py` — HEPTAPOD-aligned orchestrator
+
+See `configs/dqm_demo.yaml` for run-card configuration.
 
 ## License
 
