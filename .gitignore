@@ -8,3 +8,14 @@ depr/
 # Example sandbox directories
 examples/advanced/**/sandbox_notebook/
 examples/advanced/**/demo_sandbox/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
