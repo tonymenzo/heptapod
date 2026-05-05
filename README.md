@@ -92,9 +92,21 @@ Complete conversation transcripts with agent outputs are available for the EDA a
 
 ## Configuration
 
+### First-time setup
+
+The repo ships **templates**: `config.example.py` and `.env.example`. Copy each
+to its tracked-name-minus-`.example` once, then edit your local copy. The
+copies are gitignored so your paths and API keys never enter commit history.
+
+```bash
+cp config.example.py config.py
+cp .env.example .env
+```
+
 ### LLM Providers
 
-**Cloud LLMs** (requires API key): Edit the `.env` file in the repository root:
+**Cloud LLMs** (requires API key): Edit `.env` in the repository root (created
+above from `.env.example`):
 
 ```bash
 ANTHROPIC_API_KEY=your_key_here    # Claude — https://console.anthropic.com/
@@ -105,7 +117,7 @@ GROQ_API_KEY=your_key_here         # Groq — https://console.groq.com/
 
 You only need keys for the providers you plan to use. When using HEPTAPOD through an MCP coding agent, the agent provides its own LLM — API keys are only needed for the Orchestral demos.
 
-**Local Ollama** (free, no API key): Install from [ollama.com](https://ollama.com/download), then configure in `config.py`:
+**Local Ollama** (free, no API key): Install from [ollama.com](https://ollama.com/download), then configure in `config.py` (created above from `config.example.py`):
 
 ```python
 ollama_host = None              # localhost:11434 (default)
@@ -114,7 +126,7 @@ ollama_model = "gpt-oss:20b"    # your preferred model
 
 ### External Tool Paths
 
-If using toolkits that require external software, edit `config.py`:
+If using toolkits that require external software, edit `config.py` (your local copy):
 
 ```python
 wolframscript_path = "/path/to/wolframscript"      # EDA toolkit, FeynRules
