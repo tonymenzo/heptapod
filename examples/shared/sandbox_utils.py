@@ -56,6 +56,10 @@ def create_new_sandbox(demo_files_dir: Path, mode: str = "todo") -> tuple[str, s
 
     config = MODE_CONFIG[mode]
 
+    # Ensure the workspace dir exists. On a fresh checkout it may not be,
+    # in which case iterdir() would otherwise raise FileNotFoundError.
+    demo_files_dir.mkdir(parents=True, exist_ok=True)
+
     # Find existing sandbox directories
     existing_sandboxes = []
     for item in demo_files_dir.iterdir():

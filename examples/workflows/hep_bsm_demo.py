@@ -17,6 +17,11 @@ sys.path.insert(0, str(REPO_ROOT))
 SHARED_DIR = Path(__file__).resolve().parent.parent / 'shared'
 sys.path.insert(0, str(SHARED_DIR))
 
+# Load .env so tools that read API keys at construction time (e.g.
+# WebSearchTool reading OPENAI_API_KEY) see them.
+from dotenv import load_dotenv
+load_dotenv(REPO_ROOT / ".env")
+
 # =========================================================== #
 # ======================== IMPORTS ========================== #
 # =========================================================== #
@@ -59,14 +64,15 @@ print("Using FeynRules path:", feynrules_path)
 print("Using MG5 path:", mg5_path)
 print("Using wolframscript path:", wolframscript_path)
 
-# Import app server (not the basic web UI server)
-import app.server as app_server
+# Import the Orchestral app server (qualified path; bare `app` is not
+# top-level on the installed orchestral package).
+import orchestral.ui.app.server as app_server
 
 # Import sandbox utilities
 from sandbox_utils import create_new_sandbox
 
-# Configure workspace - either use existing or create new sandbox
-demo_files_dir = Path(__file__).resolve().parent / 'hep_bsm_sandbox'
+# Configure workspace - either use existing or create new sandbox.
+demo_files_dir = REPO_ROOT / 'examples' / 'hep_bsm_sandbox'
 
 CREATE_NEW_SANDBOX = True  # Set to True to create a new sandbox, False to use existing
 MODE = "explorer"          # Options: "todo", "plan", "explorer"
