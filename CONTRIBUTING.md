@@ -743,7 +743,8 @@ Feel free to propose new categories as needed. Each category should have:
 4. **Document external dependencies**:
    - In tool docstring
    - In [README.md](README.md) (update Installation section if needed)
-   - In [config.py](config.py) if configuration paths are needed
+   - In [config.example.py](config.example.py) if configuration paths are needed
+     (the tracked template — users copy it to `config.py` locally)
 
 5. **Update documentation**:
    - Add entry to [tools/README.md](tools/README.md) with usage examples
