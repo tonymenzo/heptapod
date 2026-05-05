@@ -30,7 +30,7 @@ from orchestral.tools.hooks import TruncateOutputHook, DangerousCommandHook, Saf
 
 # LLM imports.
 from orchestral.llm import GPT, Claude, Gemini, Groq
-from llm import get_ollama, get_reasoning_ollama
+from llm import get_ollama, get_reasoning_ollama, get_vllm, get_litellm
 
 # Prompt and tool imports.
 from prompts import HEP_BSM_EVT_GEN_EXPLORER_PROMPT
@@ -156,6 +156,34 @@ LLM = GPT()
 
 # Option 8: Ollama with reasoning mode (for models like gpt-oss:20b)
 #LLM = get_reasoning_ollama()
+
+# ============================================================ #
+# ===== Self-hosted vLLM / OpenAI-compatible server ========== #
+# =====       (configured in config.py)              ========= #
+# ============================================================ #
+
+# Option 9: vLLM (uses config.vllm_host and config.vllm_model)
+#LLM = get_vllm()
+
+# Option 10: vLLM with model override (server may host multiple)
+#LLM = get_vllm(model='meta-llama/Meta-Llama-3-8B-Instruct')
+
+# Option 11: vLLM with host override (advanced - prefer config.py)
+#LLM = get_vllm(host='http://localhost:8000/v1', model='gpt-oss:120b')
+
+# ============================================================ #
+# = LiteLLM Proxy (speaks OpenAI chat-completions on the wire) =#
+# =====            (configured in config.py)         ========= #
+# ============================================================ #
+
+# Option 12: LiteLLM (uses config.litellm_host and config.litellm_model)
+#LLM = get_litellm()
+
+# Option 13: LiteLLM with model override (proxy routes by model name)
+#LLM = get_litellm(model='openai/gpt-4o')
+
+# Option 14: LiteLLM with host override (advanced - prefer config.py)
+#LLM = get_litellm(host='http://localhost:4000/v1', model='ollama/gpt-oss:20b')
 
 # Create agent.
 agent = Agent(llm=LLM,

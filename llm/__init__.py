@@ -8,19 +8,28 @@
 """
 LLM configuration and utilities for HEP workflows.
 
-Provides easy access to configured Ollama instances using settings from config.py.
+Provides easy access to configured Ollama, vLLM, and LiteLLM instances
+using settings from config.py.
 """
 
 from .utils import (
     get_ollama,
     get_reasoning_ollama,
+    get_vllm,
+    get_litellm,
     list_available_models,
-    print_config_info
+    list_vllm_models,
+    list_litellm_models,
+    print_config_info,
 )
 
 __all__ = [
     'get_ollama',
     'get_reasoning_ollama',
+    'get_vllm',
+    'get_litellm',
     'list_available_models',
-    'print_config_info'
+    'list_vllm_models',
+    'list_litellm_models',
+    'print_config_info',
 ]

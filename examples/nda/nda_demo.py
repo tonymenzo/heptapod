@@ -30,7 +30,7 @@ from orchestral.tools.hooks import TruncateOutputHook
 
 # LLM imports.
 from orchestral.llm import GPT, Claude, Gemini, Groq
-from llm import get_ollama, get_reasoning_ollama
+from llm import get_ollama, get_reasoning_ollama, get_vllm, get_litellm
 
 # Tool imports — NDA study group: NDA + FeynGraph + PDG + MadGraph.
 from tools.nda import (EstimateDecayWidthNDATool, EstimateDecayWidthFormulaNDATool,
@@ -117,6 +117,13 @@ LLM = Claude()
 
 # Local Ollama (configured in config.py)
 #LLM = get_ollama()
+
+# Self-hosted vLLM / OpenAI-compatible server (configured in config.py)
+#LLM = get_vllm()
+
+# LiteLLM proxy — speaks OpenAI chat-completions on the wire, routes
+# to any registered backend (configured in config.py)
+#LLM = get_litellm()
 
 # =========================================================== #
 # ========================== RUN =========================== #

@@ -89,6 +89,56 @@ def list_available_models(show_ollama: bool = True) -> dict:
     print(f"  Usage: Groq(model='llama-3.3-70b-versatile')")
     print()
 
+    # vLLM (check what the configured server is serving)
+    print("vLLM Models (Self-hosted, OpenAI-compatible):")
+    print("-" * 70)
+    try:
+        import sys, os
+        _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        sys.path.insert(0, _root)
+        import config
+        if getattr(config, "vllm_host", None):
+            from llm import list_vllm_models
+            try:
+                vllm_ids = list_vllm_models()
+                if vllm_ids:
+                    print(f"Served by {config.vllm_host}:")
+                    for mid in vllm_ids:
+                        print(f"  * {mid}")
+                else:
+                    print(f"  ({config.vllm_host} returned no models)")
+            except Exception as e:
+                print(f"  (could not query {config.vllm_host}: {e})")
+        else:
+            print("  (no vllm_host configured in config.py)")
+    except Exception as e:
+        print(f"  (vLLM listing unavailable: {e})")
+    print(f"  Usage: get_vllm(model='meta-llama/Meta-Llama-3-8B-Instruct')")
+    print()
+
+    # LiteLLM (proxy that translates OpenAI chat-completions to many backends)
+    print("LiteLLM Proxy (routes OpenAI-format requests to any registered backend):")
+    print("-" * 70)
+    try:
+        if getattr(config, "litellm_host", None):
+            from llm import list_litellm_models
+            try:
+                litellm_ids = list_litellm_models()
+                if litellm_ids:
+                    print(f"Routed by {config.litellm_host}:")
+                    for mid in litellm_ids:
+                        print(f"  * {mid}")
+                else:
+                    print(f"  ({config.litellm_host} returned no models)")
+            except Exception as e:
+                print(f"  (could not query {config.litellm_host}: {e})")
+        else:
+            print("  (no litellm_host configured in config.py)")
+    except Exception as e:
+        print(f"  (LiteLLM listing unavailable: {e})")
+    print(f"  Usage: get_litellm(model='openai/gpt-4o')")
+    print()
+
     # Ollama (check what's installed locally)
     if show_ollama:
         print("Ollama Models (Local):")
