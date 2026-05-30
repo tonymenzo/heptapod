@@ -10,11 +10,12 @@ from typing import Optional
 from orchestral.tools.base.tool import BaseTool
 from orchestral.tools.base.field_utils import RuntimeField, StateField
 
-import numpy as np
-from tqdm import tqdm
 import sys
 
 SCHEMA_VERSION = "evtjsonl-1.0"
+
+# numpy and tqdm are deferred to _run() so module import doesn't pull
+# in numpy's ~12 s cold load (per heptapod toolkit startup profile).
 
 # Configure tqdm to prevent multiple line printing
 TQDM_CONFIG = {
@@ -58,6 +59,9 @@ class EventJSONLToNumpyTool(BaseTool):
 
     def _run(self) -> str:
         """Run the conversion from JSONL to NumPy array."""
+        import numpy as np
+        from tqdm import tqdm
+
         src = self._safe_path(self.jsonl_path)
         dst = self._safe_path(self.output_path)
         
@@ -223,6 +227,8 @@ class LHEToJSONLTool(BaseTool):
 
     def _run(self) -> str:
         """Run the tool."""
+        from tqdm import tqdm
+
         try:
             self._setup()
         except Exception as e:
@@ -444,6 +450,9 @@ class JetsJSONLToNumpyTool(BaseTool):
 
     def _run(self) -> str:
         """Run the conversion from jets JSONL to NumPy array."""
+        import numpy as np
+        from tqdm import tqdm
+
         src = self._safe_path(self.jsonl_path)
         dst = self._safe_path(self.output_path)
 
