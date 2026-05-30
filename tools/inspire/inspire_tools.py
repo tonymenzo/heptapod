@@ -24,6 +24,20 @@ from .library import InspireLibrary
 
 SCHEMA_VERSION = "inspire-hep-1.0"
 
+def _inspire_interface(base_directory: str, cache_enabled: bool) -> "InspireInterface":
+    """Construct an InspireInterface with cache_file resolved against
+    ``base_directory`` and caching toggled by ``cache_enabled``.
+
+    Centralised because most _setup methods used to call
+    ``InspireInterface()`` with no args, which silently defaulted to
+    ``enable_cache=True`` and loaded ``~/.heptapod/inspire_cache.json``
+    (close to 1 GB in some installs) into a fresh dict for EVERY tool
+    instance. The cache_enabled state field from toolkit.yaml's
+    ``config:`` block now flows through here instead.
+    """
+    cache_file = os.path.join(os.path.abspath(base_directory), ".inspire_cache.json")
+    return InspireInterface(cache_file=cache_file, enable_cache=cache_enabled)
+
 
 # ==================== Literature Tools ==================== #
 
@@ -172,12 +186,15 @@ class InspirePaperTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory for file operations"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        """Initialize interface."""
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         """Get paper details."""
@@ -255,11 +272,15 @@ class InspireCitationTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -373,11 +394,15 @@ class InspireBibTeXTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -437,11 +462,15 @@ class InspireAuthorTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -508,11 +537,15 @@ class InspireInstitutionTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -571,11 +604,15 @@ class InspireConferenceTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -627,11 +664,15 @@ class InspireJournalTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -682,11 +723,15 @@ class InspireExperimentTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
-        self._interface = InspireInterface()
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
 
     def _run(self) -> str:
         try:
@@ -760,14 +805,17 @@ class InspireReadingListTool(BaseTool):
     base_directory: str = StateField(
         description="Base sandbox directory"
     )
+    cache_enabled: bool = StateField(
+        description="Use the on-disk INSPIRE cache (default: True). Toolkit config sets the path; see toolkit.yaml config block.",
+        default=True,
+    )
     # ================================================================ #
 
     def _setup(self):
-        self.base_directory = os.path.abspath(self.base_directory)
+        """Initialize INSPIRE interface (and any helpers)."""
+        self._interface = _inspire_interface(self.base_directory, self.cache_enabled)
         library_file = os.path.join(self.base_directory, ".inspire_library.json")
         self._library = InspireLibrary(library_file)
-        self._interface = InspireInterface()
-
     def _run(self) -> str:
         try:
             action = self.action.lower()
