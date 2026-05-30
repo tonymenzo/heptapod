@@ -1,0 +1,260 @@
+name: heptapod
+version: 2.0.0
+description: An open-source agentic toolkit for high-energy physics.
+author: Tony Menzo
+license: GPL-3.0
+category: hep
+python_version: '3.12'
+keywords: []
+config:
+  - name: base_directory
+    description: Working directory used by tools for output, sandboxing,
+      and findings. Most heptapod tools resolve relative paths against this root.
+    type: string
+    required: true
+  - name: mg5_path
+    description: Absolute path to the MG5_aMC install dir containing bin/mg5_aMC.
+      Required for the event_gen bundle's MadGraph tools.
+    type: string
+    required: false
+  - name: feynrules_path
+    description: Path to the FeynRules installation root. Required for the
+      feynrules bundle.
+    type: string
+    required: false
+  - name: wolframscript_path
+    description: Command or absolute path to wolframscript. Required for
+      the feynrules bundle and eda bundle's Wolfram-backed tools.
+    type: string
+    required: false
+  - name: cache_enabled
+    description: Enable INSPIRE query caching.
+    type: boolean
+    default: false
+bundles:
+  pdg: {}
+  inspire: {}
+  nda: {}
+  units: {}
+  analysis: {}
+  event_gen: {}
+  feynrules: {}
+  eda: {}
+tools:
+  - module: tools.analysis.conversions
+    name: EventJSONLToNumpyTool
+    description: Convert a JSONL event dataset into a zero-padded NumPy array.
+    bundle: analysis
+  - module: tools.analysis.conversions
+    name: JetsJSONLToNumpyTool
+    description: Convert a JSONL jets dataset into a zero-padded NumPy array.
+    bundle: analysis
+  - module: tools.analysis.conversions
+    name: LHEToJSONLTool
+    description: Convert a MadGraph LHE file into the JSONL (evtjsonl-1.0)
+      schema.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: ApplyCutsTool
+    description: Apply kinematic cuts to particles from numpy array or JSONL.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: CalculateDeltaRTool
+    description: Calculate Delta R between particles.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: CalculateInvariantMassTool
+    description: Calculate the invariant mass of a system of particles.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: CalculateTransverseMomentumTool
+    description: Calculate transverse momentum (pT) for particles.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: FilterByDeltaRTool
+    description: Remove objects from event arrays based on Delta R proximity to
+      other objects.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: FilterByPDGIDTool
+    description: Filter particles by PDG ID from JSONL files.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: GetHardestNJetsTool
+    description: Extract the N hardest (highest pT) jets from jet clustering
+      output.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: GetHardestNTool
+    description: Extract the N hardest (highest pT) particles from events.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: MergeObjectCollectionsTool
+    description: Merge multiple object collections (particles, jets) into a
+      single unified JSONL file.
+    bundle: analysis
+  - module: tools.analysis.kinematics
+    name: SortByPtTool
+    description: Sort particles by transverse momentum (pT) in descending order.
+    bundle: analysis
+  - module: tools.analysis.reconstruction
+    name: ResonanceReconstructionTool
+    description: Template-based resonance reconstruction tool for combining
+      pre-selected particle arrays.
+    bundle: analysis
+  - module: tools.eda.compute_symbolic_amplitude_tool
+    name: ComputeSymbolicAmplitude
+    description: Generate FeynCalc code with symbolic masses and couplings.
+    bundle: eda
+  - module: tools.eda.convert_to_python_tool
+    name: ConvertToPython
+    description: Convert a Mathematica symbolic expression to a Python function.
+    bundle: eda
+  - module: tools.eda.run_wolfram_tool
+    name: RunWolframScript
+    description: Execute Mathematica/FeynCalc code via wolframscript.
+    bundle: eda
+  - module: tools.eda.run_wolfram_tool
+    name: RunWolframScriptBatch
+    description: Execute multiple Mathematica/FeynCalc scripts concurrently.
+    bundle: eda
+  - module: tools.eda.simplify_result_tool
+    name: SimplifyResult
+    description: Simplify, substitute, or take limits of a Mathematica symbolic
+      expression.
+    bundle: eda
+  - module: tools.eda.simplify_result_tool
+    name: SimplifyResultBatch
+    description: Simplify multiple expressions concurrently.
+    bundle: eda
+  - module: tools.eda.theory.skills_graph_tool
+    name: LookupTheory
+    description: Navigate the QFT theory knowledge base (Skills Graph).
+    bundle: eda
+  - module: tools.feyngraph.enumerate_tool
+    name: EnumerateDiagramsTool
+    description: Enumerate all Feynman diagrams for a process using FeynGraph.
+    bundle: nda
+  - module: tools.feyngraph.visualize_tool
+    name: VisualizeDiagramsTool
+    description: Generate Feynman diagram visualizations using FeynGraph's
+      native SVG drawing.
+    bundle: nda
+  - module: tools.feynrules.feynrules
+    name: FeynRulesToUFOTool
+    description: Generate a UFO model directory from a FeynRules .fr model file
+      by calling Mathematica's `wolframscript`.
+    bundle: feynrules
+  - module: tools.inspire.inspire_tools
+    name: InspireAuthorTool
+    description: Get information about a physicist and their publication
+      history.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireBibTeXTool
+    description: Get BibTeX entry for a paper.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireCitationTool
+    description: Analyze citations for a paper.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireConferenceTool
+    description: Search for physics conferences and seminars.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireExperimentTool
+    description: Search for physics experiments.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireInstitutionTool
+    description: Search for physics institutions.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireJournalTool
+    description: Search for physics journals.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireNotesTool
+    description: Manage notes on INSPIRE papers.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspirePaperTool
+    description: Get detailed information about a specific INSPIRE paper.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireReadingListTool
+    description: Manage your personal reading list of INSPIRE papers.
+    bundle: inspire
+  - module: tools.inspire.inspire_tools
+    name: InspireSearchTool
+    description: Search INSPIRE HEP for physics papers.
+    bundle: inspire
+  - module: tools.mg5.mg5
+    name: MadGraphFromRunCardTool
+    description: Run MadGraph5_aMC@NLO to generate parton-level events given a
+      .mg5 run card template.
+    bundle: event_gen
+  - module: tools.nda.branching_ratio_tool
+    name: EstimateBranchingRatioNDATool
+    description: Estimates branching ratios using NDA for multiple diagram
+      classes.
+    bundle: nda
+  - module: tools.nda.compare_phase_space
+    name: ComparePhaseSpaceTool
+    description: Compares n-body phase space volumes across different final
+      state multiplicities.
+    bundle: nda
+  - module: tools.nda.matrix_element
+    name: EstimateMatrixElementTool
+    description: Estimates matrix element squared using dimensional analysis and
+      spin counting.
+    bundle: nda
+  - module: tools.nda.nda_formula_tool
+    name: EstimateDecayWidthFormulaNDATool
+    description: Returns the NDA scaling formula for a decay process without
+      computing
+    bundle: nda
+  - module: tools.nda.nda_tool
+    name: EstimateDecayWidthNDATool
+    description: Estimates decay width using Naive Dimensional Analysis -
+      Diagram-First Interface.
+    bundle: nda
+  - module: tools.nda.phase_space
+    name: EstimatePhaseSpaceTool
+    description: Estimates n-body phase space volume for massless final states.
+    bundle: nda
+  - module: tools.pdg.pdg_tool
+    name: PDGDatabaseTool
+    description: Query the Particle Data Group database for particle properties.
+    bundle: pdg
+  - module: tools.pdg.pdg_tool
+    name: PDGPropertyTool
+    description: Query a specific PDG property by its PDGID.
+    bundle: pdg
+  - module: tools.pdg.pdg_tool
+    name: PDGSearchTool
+    description: Search the PDG database for particles matching a query.
+    bundle: pdg
+  - module: tools.pythia.pythia
+    name: JetClusterSlowJetTool
+    description: Cluster jets with Pythia8.SlowJet for a single event.
+    bundle: event_gen
+  - module: tools.pythia.pythia
+    name: PythiaFromRunCardTool
+    description: Generate hadron-level events using Pythia8 driven by a provided
+      .cmnd run card.
+    bundle: event_gen
+  - module: tools.sherpa.sherpa
+    name: SherpaFromRunCardTool
+    description: Generate hadron-level events using Sherpa3 driven by a provided
+      .yaml run card.
+    bundle: event_gen
+  - module: tools.units.metric_prefix_converter
+    name: MetricPrefixConverter
+    description: Convert between SI metric prefixes for the same base unit.
+    bundle: units
+  - module: tools.units.natural_units_converter
+    name: NaturalUnitsConverter
+    description: Convert between natural units (ℏ=c=1) and SI units.
+    bundle: units
