@@ -1,7 +1,0 @@
-# Profile: default
-# Toolkits below are what the agent sees. Edit with tb activate /
-# tb deactivate, or by hand. Run `tb profile tools` to see available
-# bundles + tools per toolkit.
-toolkits:
-  heptapod:
-    bundles: [event_gen]

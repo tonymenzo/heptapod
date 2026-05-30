@@ -27,3 +27,7 @@ examples/advanced/**/demo_sandbox/
 
 # Local Claude Code settings (per-clone, not part of toolkit config)
 .claude/
+
+# Consumer/per-project state from `toolbase install` and MCP-client wiring
+.toolbase/
+.mcp.json
