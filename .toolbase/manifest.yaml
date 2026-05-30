@@ -1,0 +1,5 @@
+# toolbase project manifest — checked into git.
+# Pin a toolkit with: tb install <name>@<version>
+# See https://toolbase-ai.com/docs/environments
+toolkits: []
+schema_version: 1
