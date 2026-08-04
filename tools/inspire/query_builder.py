@@ -111,11 +111,12 @@ class QueryBuilder:
         if parts:
             return " and ".join(parts)
 
-        # Fallback: treat as title search if it looks like keywords
-        # Otherwise return as-is for general search
-        if self._looks_like_keywords(query):
-            return f"t {query}"
-
+        # Fallback: no author/topic/date/journal structure detected. Use a
+        # GENERAL INSPIRE search (matches title, abstract, keywords, ...) rather
+        # than a title-only search. A title-only match over-constrains multi-token
+        # keyword queries — e.g. "scalar leptoquark S1" as `t scalar leptoquark
+        # S1` returns 0 hits (no title has all those tokens), whereas the general
+        # search returns the relevant leptoquark papers.
         return query
 
     def _extract_author(self, text: str) -> Optional[Tuple[str, str]]:
