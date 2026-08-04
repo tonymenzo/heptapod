@@ -53,3 +53,21 @@ examples/primer/cms_dimuon/
 /.mcp.json
 /opencode.json
 /.codex/
+
+# INSPIRE query cache (local, regenerated on demand).
+.inspire_cache.json
+
+# Background-job scratch (spec/status/log/result per job) — runtime state,
+# written under whatever base_directory the jobs bundle runs with.
+.jobs/
+
+# Sandbox the lagrangian-extraction example writes into.
+examples/lagrangian_extraction/sandbox/
+
+# Stray tool byproducts written to the repo root when a tool runs with
+# base_directory=. (audit ledgers, ad-hoc generated models). Not artifacts.
+/model/
+/audit.json
+/audit.md
+/*_audit.json
+/*_audit.md

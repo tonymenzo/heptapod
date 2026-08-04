@@ -313,7 +313,7 @@ def main():
     )
     parser.add_argument(
         "--only",
-        choices=["prereqs", "conversions", "kinematics", "reconstruction", "delta_r_filter", "feynrules", "mg5", "pythia", "sherpa", "llm", "pdg", "inspire", "units", "nda", "eda", "feyngraph", "logging"],
+        choices=["prereqs", "conversions", "kinematics", "reconstruction", "delta_r_filter", "feynrules", "frgen", "extract", "validate", "jobs", "reverse", "mg5", "pythia", "sherpa", "llm", "pdg", "inspire", "literature", "units", "nda", "eda", "feyngraph", "logging"],
         help="Run only tests for specified component (prereqs = prerequisites check only)"
     )
     parser.add_argument(
@@ -367,6 +367,26 @@ def main():
             "script": REPO_ROOT / "tools" / "feynrules" / "test_feynrules.py",
             "description": "FeynRules tools (UFO generation, path resolution, parameter validation)"
         },
+        "frgen": {
+            "script": REPO_ROOT / "tools" / "frgen" / "test_frgen.py",
+            "description": "FeynRules .fr generator (schema, validators, render, JSON tool)"
+        },
+        "extract": {
+            "script": REPO_ROOT / "tools" / "extract" / "test_extract.py",
+            "description": "Lagrangian extraction (prompt/message building, schema-constrained LLM)"
+        },
+        "validate": {
+            "script": REPO_ROOT / "tools" / "validate" / "test_validate.py",
+            "description": "Model validation (UFO file/particle checks, .fr -> UFO compile)"
+        },
+        "jobs": {
+            "script": REPO_ROOT / "tools" / "jobs" / "test_jobs.py",
+            "description": "Background jobs (submit/poll/result, whitelist, detached runner)"
+        },
+        "reverse": {
+            "script": REPO_ROOT / "tools" / "reverse" / "test_reverse.py",
+            "description": "Reverse Lagrangian check (sanitizer, blank agent, review package)"
+        },
         "mg5": {
             "script": REPO_ROOT / "tools" / "mg5" / "test_mg5.py",
             "description": "MadGraph tools (card editing, event generation, LHE conversion)"
@@ -386,6 +406,10 @@ def main():
         "inspire": {
             "script": REPO_ROOT / "tools" / "inspire" / "tests" / "test_inspire_tools.py",
             "description": "INSPIRE tools (paper search, citations, author information)"
+        },
+        "literature": {
+            "script": REPO_ROOT / "tools" / "literature" / "test_literature.py",
+            "description": "arXiv literature tools (search, PDF download, full-text extraction)"
         },
         "units": {
             "script": REPO_ROOT / "tools" / "units" / "tests" / "test_units.py",
@@ -415,8 +439,11 @@ def main():
             "description": "EDA tools (FeynCalc codegen, Wolfram runner, symbolic-to-Python conversion)"
         },
         "logging": {
-            "script": REPO_ROOT / "tools" / "logging" / "tests" / "test_findings.py",
-            "description": "Logging tools (findings ledger)"
+            "scripts": [
+                REPO_ROOT / "tools" / "logging" / "tests" / "test_findings.py",
+                REPO_ROOT / "tools" / "logging" / "tests" / "test_audit.py",
+            ],
+            "description": "Logging tools (findings ledger, audit provenance trail)"
         },
     }
 

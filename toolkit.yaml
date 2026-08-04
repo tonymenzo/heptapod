@@ -35,12 +35,51 @@ config:
     description: Enable INSPIRE query caching.
     type: boolean
     default: false
+  - name: blank_agent_cmd
+    description: Command template for the blank-slate agent the reverse bundle
+      spawns. The agent runs in an empty directory with no MCP tools and no
+      history, so it can only see the sanitized model file. Token {output} is
+      the path the CLI writes its final message to; token {prompt} is the
+      prompt text, and if absent the prompt is appended as the last argument.
+      Any CLI agent works, for example `codex exec --sandbox read-only
+      --output-last-message {output}` or `claude -p --output-format text`.
+      Required for the reverse bundle.
+    type: string
+    required: false
 bundles:
   # ── lightweight / always-available ───────────────────────────────
   units: {}                              # pure python; nothing to install
   inspire: {}                            # uses requests (always-installed base)
   pdg:
     deps: [pdg>=0.2.0]                   # PDG database API
+  # arXiv search, PDF download and full-text extraction. INSPIRE indexes the
+  # metadata but serves neither the PDF nor the LaTeX source, which is what
+  # the extraction step actually reads.
+  literature:
+    deps: [pymupdf>=1.24.0]              # requests is in the always-installed base
+
+  # ── BSM model building: paper -> .fr -> UFO -> checked model ─────
+  # Read a paper, write a FeynRules model, prove the tool chain accepts it,
+  # then have an independent agent read the model back and compare it to the
+  # paper. Each stage is its own bundle so a user can install only what they
+  # need; none of them requires Mathematica except through the feynrules
+  # bundle, which already gates on feynrules_path and wolframscript_path.
+  #
+  # Paper text -> structured FeynRulesModel via an LLM. Providers (ollama,
+  # openai, ...) are optional runtime deps, so nothing is pinned here.
+  extract: {}
+  # Structured spec -> FeynRules .fr source. No Mathematica needed.
+  frgen:
+    deps: [jinja2>=3.1.0]                # pydantic comes via the orchestral base
+  # Blank-slate reverse check: an independent agent reconstructs the physics
+  # from the sanitized .fr alone, then a second one compares it to the paper.
+  # Spawns the CLI named by blank_agent_cmd; pure python otherwise.
+  reverse: {}
+  # Structured provenance ledger (audit.json) for end-to-end runs; pure python.
+  logging: {}
+  # Background jobs: run long tools (UFO compiles, MadGraph, reverse checks)
+  # as detached processes, poll them, collect results. Pure python.
+  jobs: {}
 
   # ── analysis stack ───────────────────────────────────────────────
   analysis:
@@ -215,6 +254,48 @@ tools:
     description: Generate a UFO model directory from a FeynRules .fr model file
       by calling Mathematica's `wolframscript`.
     bundle: feynrules
+  - module: tools.validate.validate_tool
+    name: ValidateModelTool
+    description: Compile a .fr model to a UFO and run structural pass/fail
+      checks on the result, including a MadGraph import.
+    bundle: feynrules
+  - module: tools.extract.extract_tool
+    name: ExtractLagrangianTool
+    description: Extract a structured FeynRules model from BSM paper text
+      using an LLM.
+    bundle: extract
+  - module: tools.frgen.frgen_tool
+    name: GenerateFeynRulesModelTool
+    description: Generate a FeynRules .fr model file from a structured JSON
+      spec.
+    bundle: frgen
+  - module: tools.reverse.reverse_tool
+    name: ReverseLagrangianTool
+    description: Blank-slate reverse check of a .fr model. An independent
+      agent reconstructs the LaTeX Lagrangian from the sanitized file alone,
+      optionally cross-checked against the source paper, packaged for
+      physicist sign-off.
+    bundle: reverse
+  - module: tools.logging.audit_tool
+    name: AuditTrailTool
+    description: Record, render or read a structured provenance ledger
+      (audit.json) of pipeline stages for an end-to-end run.
+    bundle: logging
+  - module: tools.jobs.jobs_tool
+    name: SubmitJobTool
+    description: Submit a long-running heptapod tool (UFO compile, full-chain
+      validation, MadGraph run, reverse check) as a detached background job
+      and get a job_id back immediately.
+    bundle: jobs
+  - module: tools.jobs.jobs_tool
+    name: JobStatusTool
+    description: Poll a background job's state (queued, running, done, failed)
+      with a log tail, or list all jobs.
+    bundle: jobs
+  - module: tools.jobs.jobs_tool
+    name: JobResultTool
+    description: Fetch a finished background job's verbatim tool output.
+    bundle: jobs
   - module: tools.inspire.inspire_tools
     name: InspireAuthorTool
     description: Get information about a physicist and their publication
@@ -260,6 +341,25 @@ tools:
     name: InspireSearchTool
     description: Search INSPIRE HEP for physics papers.
     bundle: inspire
+  - module: tools.literature.literature_tools
+    name: ArxivSearchTool
+    description: Search arXiv for physics papers (arXiv ids, PDF links,
+      abstracts).
+    bundle: literature
+  - module: tools.literature.literature_tools
+    name: ArxivSourceTool
+    description: Fetch a paper's LaTeX source from arXiv (e-print). Preferred
+      input for Lagrangian extraction, because PDF text mangles equations.
+    bundle: literature
+  - module: tools.literature.literature_tools
+    name: FetchPaperPDFTool
+    description: Download an arXiv paper PDF into the sandbox.
+    bundle: literature
+  - module: tools.literature.literature_tools
+    name: ExtractPaperTextTool
+    description: Extract full plain text from a PDF (PyMuPDF) for downstream
+      extraction.
+    bundle: literature
   - module: tools.mg5.mg5
     name: MadGraphFromRunCardTool
     description: Run MadGraph5_aMC@NLO to generate parton-level events given a
