@@ -7,5 +7,21 @@
 """HEPTAPOD logging utilities."""
 
 from .findings import append_finding, read_findings, FINDINGS_HEADER
+from .audit import (
+    AUDIT_FILENAME,
+    AUDIT_SCHEMA,
+    append_event,
+    read_audit,
+    render_audit_md,
+)
 
-__all__ = ["append_finding", "read_findings", "FINDINGS_HEADER"]
+__all__ = [
+    "append_finding",
+    "read_findings",
+    "FINDINGS_HEADER",
+    "AUDIT_FILENAME",
+    "AUDIT_SCHEMA",
+    "append_event",
+    "read_audit",
+    "render_audit_md",
+]
