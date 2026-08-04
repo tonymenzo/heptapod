@@ -90,6 +90,11 @@ tutorial notebook that builds two tools from scratch (a database query and a
 wrapper around external analysis code) and packages them as a toolbase toolkit.
 No API key needed for most of it.
 
+Building a BSM model from a paper? See
+[examples/lagrangian_extraction/](examples/lagrangian_extraction/). Its
+`minimal_model.py` writes a scalar-leptoquark `.fr` file and runs with no
+Mathematica, no LLM and no network.
+
 Each example ships a launcher that runs the whole setup above (sandbox, system prompt, bundles, external-software paths, wiring) and then starts the agent in it:
 
 ```bash
@@ -131,6 +136,7 @@ HEPTAPOD's capabilities span:
 - **Monte Carlo event generation** with MadGraph, Pythia, and Sherpa (`mg5`, `event_gen`)
 - **Event analysis**: cutflows, kinematics, reconstruction, yield normalization (`analysis`)
 - **BSM spectrum setup**: benchmark-point parsing and decay-table construction (`bsm`)
+- **BSM model building from papers**: arXiv source retrieval, `.fr` generation, UFO validation, and an independent blank-slate re-reading of the model (`literature`, `extract`, `frgen`, `feynrules`, `reverse`)
 - **Reproducible, auditable execution traces** via run cards and structured outputs
 
 Tools are grouped into **bundles**, so you install only what a workflow needs. Bundles with a `requires:` key are gated on config (see [Configuration](#configuration)); their tools stay hidden until it's set.
@@ -146,7 +152,13 @@ Tools are grouped into **bundles**, so you install only what a workflow needs. B
 | `mg5` | MadGraph5 run-card generation + fast process validation | `mg5_path` |
 | `nda` | Feynman-diagram enumeration + Naive Dimensional Analysis | feyngraph |
 | `eda` | Exact symbolic amplitudes via Mathematica/FeynCalc | `wolframscript_path` |
-| `feynrules` | BSM UFO model generation via FeynRules | `feynrules_path`, `wolframscript_path` |
+| `feynrules` | BSM UFO model generation + full-chain model validation via FeynRules | `feynrules_path`, `wolframscript_path` |
+| `literature` | arXiv search, LaTeX e-print retrieval, PDF full-text extraction | pymupdf |
+| `extract` | Paper text → structured FeynRules model spec (LLM) | an LLM provider |
+| `frgen` | Structured spec → FeynRules `.fr` source | jinja2 |
+| `reverse` | Blank-slate re-reading of a `.fr` into a physicist review package | `blank_agent_cmd` |
+| `jobs` | Detached background execution for slow tools, with polling | none (pure python) |
+| `logging` | Structured `audit.json` provenance ledger for end-to-end runs | none (pure python) |
 
 Additional domain bundles (e.g. `hepmc`/`delphes` detector simulation, `pythia`-only showering, `llp` long-lived-particle reach studies) ship on their respective feature branches. Inspect [`toolkit.yaml`](toolkit.yaml) for the authoritative, up-to-date list.
 
@@ -190,6 +202,20 @@ tb config validate heptapod                                     # check required
 ```
 
 `base_directory` defaults to the directory the agent launched `tb serve` from; pin it per-project when you want a fixed sandbox.
+
+The `reverse` bundle spawns a CLI agent instead of an external binary, so it
+takes a command template rather than a path:
+
+```bash
+tb config set heptapod blank_agent_cmd \
+  "codex exec --sandbox read-only --skip-git-repo-check --output-last-message {output}"
+```
+
+`{output}` is the file the CLI writes its final message to, and `{prompt}` is
+the prompt text (appended as the last argument if the token is absent). Any
+agent CLI works. Run it read-only and without network: the check is only
+worth anything if the agent could not look the model up. See
+[`tools/reverse/README.md`](tools/reverse/README.md).
 
 ### LLM providers (Orchestral demos only)
 

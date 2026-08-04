@@ -718,3 +718,112 @@ tool = EnumerateDiagramsTool(
     base_directory="./workspace"
 )
 ```
+
+---
+
+### BSM Model Building Tools
+
+Turn a BSM paper into a FeynRules model, prove the tool chain accepts it,
+then have an independent agent read the model back and compare it to the
+paper. Each stage is its own bundle. Only `feynrules` needs Mathematica.
+
+```
+literature  ->  extract  ->  frgen  ->  feynrules  ->  reverse
+paper text     spec         .fr        UFO+checks     REVIEW.pdf
+```
+
+A worked run is in [`examples/lagrangian_extraction/`](../examples/lagrangian_extraction/);
+the reverse loop has its own guide in [`reverse/README.md`](reverse/README.md).
+
+#### ArxivSearchTool / ArxivSourceTool / FetchPaperPDFTool / ExtractPaperTextTool
+
+**Purpose**: Get the paper. INSPIRE indexes the metadata but serves neither
+the PDF nor the LaTeX source, which is what the extraction actually reads.
+
+Prefer `ArxivSourceTool` over the PDF path: PDF text extraction mangles
+equations, and equations are the whole point here.
+
+**Example:**
+```python
+from tools.literature.literature_tools import ArxivSourceTool
+
+tool = ArxivSourceTool(arxiv_id="1603.04993", base_directory="./workspace")
+```
+
+#### ExtractLagrangianTool
+
+**Purpose**: Paper text → a structured `FeynRulesModel` spec, via an LLM
+constrained to the schema. Fields, quantum numbers, parameters and
+Lagrangian terms come out as data, not prose.
+
+#### GenerateFeynRulesModelTool
+
+**Purpose**: A structured spec → FeynRules `.fr` source. Pure python and
+deterministic — no Mathematica, and the same spec always renders the same
+file.
+
+**Input Parameters:**
+- `model_json` (str): JSON matching the `FeynRulesModel` schema
+- `output_path` (str, optional): `.fr` path relative to `base_directory`
+
+**Example:**
+```python
+from tools.frgen.frgen_tool import GenerateFeynRulesModelTool
+
+tool = GenerateFeynRulesModelTool(
+    model_json=model.model_dump_json(),
+    output_path="S1_LQ.fr",
+    base_directory="./workspace",
+)
+```
+
+#### ValidateModelTool
+
+**Purpose**: Compile a `.fr` to a UFO with FeynRules, run the Hermiticity,
+kinetic-term and mass-spectrum checks, and import the result into MadGraph.
+
+**Input Parameters:**
+- `model_path` (str): `.fr` file relative to `base_directory`
+- `physics_checks` (bool, optional): run the FeynRules consistency checks
+- `madgraph_check` (bool, optional): import the UFO into MadGraph
+- `timeout_sec` (int, optional): compile budget; large multiplets need it raised
+
+Passing means **the tool chain accepts the model**. It does not mean the
+physics matches the paper — that is what `ReverseLagrangianTool` is for.
+
+#### ReverseLagrangianTool
+
+**Purpose**: Blank-slate reverse check. An agent that never saw the paper
+reconstructs the physics from the sanitized `.fr` alone; a second fresh agent
+grades that reconstruction against the paper term by term. Output is a
+review package ending in a sign-off block — the tooling never issues the
+verdict itself.
+
+**Input Parameters:**
+- `model_path` (str): `.fr` file relative to `base_directory`
+- `action` (str): `reconstruct`, `crosscheck`, or `full`
+- `paper_tex_path` (str, optional): paper source, required for the cross-check
+
+Needs `blank_agent_cmd`. Full detail in [`reverse/README.md`](reverse/README.md).
+
+#### SubmitJobTool / JobStatusTool / JobResultTool
+
+**Purpose**: Run slow tools detached. UFO compiles and reverse checks take
+minutes, which is longer than an agent should block for.
+
+**Example:**
+```python
+from tools.jobs.jobs_tool import SubmitJobTool
+
+tool = SubmitJobTool(
+    tool_name="ValidateModelTool",
+    tool_args='{"model_path": "S1_LQ.fr"}',   # JSON string
+    base_directory="./workspace",
+)
+```
+
+#### AuditTrailTool
+
+**Purpose**: Record, render or read a structured `audit.json` provenance
+ledger, so a multi-stage run leaves a reviewable trace of what ran, in what
+order, and with what outcome.
