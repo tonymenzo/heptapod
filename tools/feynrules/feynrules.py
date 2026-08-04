@@ -44,6 +44,7 @@ class FeynRulesToUFOTool(BaseTool):
     output_dir: str = RuntimeField(default="UFO_Output", description="Directory for UFO output")
     log_dir: Optional[str] = RuntimeField(default=None, description="Directory to store logs")
     timeout_sec: Optional[int] = RuntimeField(default=3600, description="Timeout in seconds for Mathematica run")
+    run_checks: Optional[bool] = RuntimeField(default=False, description="Also run FeynRules consistency checks (Hermiticity, diagonal kinetic terms, mass spectrum) and parse them into a 'checks' list")
     # ---------------------------------------------------------------------- #
 
     # ---------------------------- State fields ---------------------------- #
@@ -98,6 +99,8 @@ class FeynRulesToUFOTool(BaseTool):
             f"FeynRulesPath={abs_fr or ''}",
             f"OutputDir={abs_out}",
         ]
+        if self.run_checks:
+            cmd.append("Checks=true")
 
         try:
             proc = subprocess.run(
@@ -134,6 +137,11 @@ class FeynRulesToUFOTool(BaseTool):
             "logs": {"stdout": stdout_path, "stderr": stderr_path},
             "files_created": files_created,
         }
+
+        if self.run_checks:
+            from .wl_checks import parse_check_blocks
+
+            summary["checks"] = parse_check_blocks(proc.stdout or "")
 
         if not ok:
             hint = None
