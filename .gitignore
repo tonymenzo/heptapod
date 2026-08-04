@@ -71,3 +71,8 @@ examples/lagrangian_extraction/sandbox/
 /audit.md
 /*_audit.json
 /*_audit.md
+
+# ... but test fixtures under a tool's test_files/ are inputs, not output.
+# Without this, committing one needs `git add -f` and is silently skipped
+# otherwise (tools/validate/test_validate.py reads a checks-log fixture).
+!tools/**/test_files/**/*.log

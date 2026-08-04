@@ -1,0 +1,17 @@
+[INFO] Loading via explicit file: /path/FeynRules.m
+[INFO] Loading SM from: /path/Models/SM/SM.fr
+[INFO] Running FeynRules consistency checks.
+HEPTAPOD-CHECK-BEGIN: hermiticity
+Checking the hermiticity of the Lagrangian...
+The Lagrangian is hermitian.
+HEPTAPOD-CHECK-END: hermiticity
+HEPTAPOD-CHECK-BEGIN: kinetic_terms
+Checking the diagonality of the kinetic terms...
+The kinetic terms are diagonal and correctly normalized.
+HEPTAPOD-CHECK-END: kinetic_terms
+HEPTAPOD-CHECK-BEGIN: mass_spectrum
+Checking the mass spectrum...
+   S1 :  1500. GeV
+HEPTAPOD-CHECK-END: mass_spectrum
+[INFO] UFO output: /path/S1_LQ_RR_UFO
+[INFO] Done.
