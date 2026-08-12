@@ -140,6 +140,7 @@ Tools are grouped into **bundles**, so you install only what a workflow needs. B
 | `units` | Unit / natural-unit conversions | none |
 | `inspire` | INSPIRE-HEP literature search | none |
 | `pdg` | Particle Data Group lookups | `pdg` pip pkg |
+| `agent_dev` | HEPTAPOD skill authoring guidance | none |
 | `analysis` | Cutflows, kinematics, reconstruction, JSONL/NumPy conversions, yield normalization, recast linting | numpy, tqdm, pylhe |
 | `bsm` | SUSY benchmark-point spectrum parsing; Pythia decay-table construction | none (pure python) |
 | `event_gen` | MadGraph → Pythia/Sherpa event-generation pipeline | pythia8mc, sherpa-mc, pylhe |
@@ -160,8 +161,9 @@ Some bundles ship a **skill** — a written guide to using their tools well, cov
 |-------|--------|--------|
 | `feynrules` | Declaring mass and width once, tagging BSM couplings with an interaction order, checking the UFO before MG5 sees it | `feynrules` |
 | `mg5` | Shallow comma decay chains and the `NP=N` alternative, `compute_widths` ordering, reading past MG5's auto-conversion error mask | `mg5` |
+| `build-skills` | Choosing skill versus tool, authoring minimal skills, and validating them | `agent_dev` |
 
-Each skill names a bundle, and `tb connect` surfaces it only when that bundle's tools are actually being served — so the `mg5` guide stays hidden until `mg5_path` is set, since without it the tools it describes aren't there either. `tb deactivate heptapod__mg5` turns one off; `tb activate` turns it back on.
+Each skill names a bundle, and `tb connect` surfaces it only when that bundle is active — so the `mg5` guide stays hidden until `mg5_path` is set, since without it the tools it describes aren't there either. `tb deactivate heptapod__mg5` turns one off; `tb activate` turns it back on.
 
 How a skill reaches the agent depends on the harness:
 
