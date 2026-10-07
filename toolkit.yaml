@@ -42,6 +42,8 @@ bundles:
   pdg:
     deps: [pdg>=0.2.0]                   # PDG database API
 
+  agent_dev: {}
+
   # ── analysis stack ───────────────────────────────────────────────
   analysis:
     deps: [numpy>=2.3.5, tqdm>=4.67.0, pylhe>=1.0.2]
