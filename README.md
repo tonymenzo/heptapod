@@ -34,31 +34,22 @@ Create a working directory:
 mkdir my_session && cd my_session
 ```
 
-Activate all HEPTAPOD tools or only the bundles (curated sets of tools and skills) you need:
-
-**All bundles:**
+Activate all of HEPTAPOD with
 
 ```bash
 tb activate heptapod
 ```
 
-**Selected bundles only:** issue `tb activate heptapod/<bundle>` for each bundle you want to expose to the agent:
+or select individual bundles (curated sets of tools and skills) using `tb activate heptapod/<bundle>`. For example, to enable particle data lookups:
 
 ```bash
 tb activate heptapod/pdg
-tb activate heptapod/nda
 ```
 
 To see all available bundles and tools:
 
 ```bash
 tb list -v
-```
-
-Check the current project and which tools will be served:
-
-```bash
-tb status
 ```
 
 Connect and launch your preferred agent using **one** of these options.
@@ -85,6 +76,14 @@ opencode
 ```
 
 When prompted, trust the `toolbase` MCP server. Then run `/mcp` in Claude Code or Codex, or `/mcps` in OpenCode, and check that `toolbase` appears in the server list.
+
+You can also use the tools through an MCP-compatible agent extension in **Visual Studio Code**. From your terminal, open the directory where you activated HEPTAPOD and issue
+
+```bash
+code .
+```
+
+After trusting the directory, the tools will be agent-accessible from the editor's agent interface.
 
 With the `pdg` bundle activated, try prompting:
 
