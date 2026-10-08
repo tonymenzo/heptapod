@@ -34,7 +34,7 @@ Create a working directory:
 mkdir my_session && cd my_session
 ```
 
-Choose **one** activation option for this project.
+Activate all HEPTAPOD tools or only the bundles you need:
 
 **All bundles:**
 
