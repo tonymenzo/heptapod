@@ -50,9 +50,9 @@ Most bundles (`units`, `inspire`, `pdg`, `nda`, `analysis`, `bsm`) work out of t
 #### MadGraph5_aMC@NLO (`mg5`, `event_gen`)
 
 ```bash
-wget https://launchpad.net/mg5amcnlo/3.0/3.6.x/+download/MG5_aMC_v3.6.6.tar.gz
-tar -xzf MG5_aMC_v3.6.6.tar.gz
-tb config set heptapod mg5_path "$(pwd)/MG5_aMC_v3.6.6"
+wget https://launchpad.net/mg5amcnlo/3.0/3.6.x/+download/MG5_aMC_v3.6.7.tar.gz
+tar -xzf MG5_aMC_v3.6.7.tar.gz
+tb config set heptapod mg5_path "$(pwd)/MG5_aMC_v3.6.7"
 ```
 
 #### Pythia8 and Sherpa3 (`event_gen`)

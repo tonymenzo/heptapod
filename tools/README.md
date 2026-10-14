@@ -214,7 +214,7 @@ from mg5.mg5_tools import MadGraphFromRunCardTool
 
 tool = MadGraphFromRunCardTool(
     base_directory="./workspace",
-    mg5_path="/path/to/MG5_aMC_v3.6.6"
+    mg5_path="/path/to/MG5_aMC_v3.6.7"
 )
 
 result = tool.run(

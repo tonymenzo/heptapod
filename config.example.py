@@ -69,5 +69,5 @@ feynrules_path = "/path/to/FeynRules"
 wolframscript_path = "/path/to/wolframscript"
 
 # MadGraph5_aMC PATH.
-# Example: "/path/to/MG5_aMC_v3.6.6"
+# Example: "/path/to/MG5_aMC_v3.6.7"
 mg5_path = "/path/to/MG5_aMC"
