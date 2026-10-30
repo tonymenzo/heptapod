@@ -60,7 +60,6 @@ litellm_model = None
 # ============================================================ #
 
 # FeynRules PATH.
-# Example: "/path/to/FeynRules_v2.3.49"
 feynrules_path = "/path/to/FeynRules"
 
 # WolframScript executable PATH.
@@ -75,8 +74,7 @@ wolframscript_path = "/path/to/wolframscript"
 pythia_path = "/path/to/pythia"
 sherpa_path = "/path/to/Sherpa"
 
-# MadGraph5_aMC PATH.
-# Example: "/path/to/MG5_aMC_v3.6.6"
+# MadGraph5_aMC PATH (the unpacked MG5_aMC_v<version> directory).
 mg5_path = "/path/to/MG5_aMC"
 
 # Rivet installation prefix (the directory holding bin/rivet-config), for the

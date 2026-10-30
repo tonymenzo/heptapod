@@ -44,15 +44,16 @@ Most bundles (`units`, `inspire`, `hepdata`, `pdg`, `arxiv`, `literature`, `nda`
 1. Install [Mathematica](https://www.wolfram.com/mathematica/) (includes WolframScript)
 2. Install [FeynCalc](https://feyncalc.github.io/) (for `eda`)
 3. Authenticate: `wolframscript -authenticate`
-4. Optionally install [FeynRules](https://feynrules.irmp.ucl.ac.be/) v2.3.49 (for UFO model generation)
+4. Optionally install [FeynRules](https://feynrules.irmp.ucl.ac.be/) (for UFO model generation)
 5. Register the installed software using the [configuration commands](../README.md#configuration).
 
 #### MadGraph5_aMC@NLO (`mg5`, `event_gen`)
 
+Download the current release from [Launchpad](https://launchpad.net/mg5amcnlo/+download), unpack it, and register the unpacked directory:
+
 ```bash
-wget https://launchpad.net/mg5amcnlo/3.0/3.6.x/+download/MG5_aMC_v3.6.6.tar.gz
-tar -xzf MG5_aMC_v3.6.6.tar.gz
-tb config set heptapod mg5_path "$(pwd)/MG5_aMC_v3.6.6"
+tar -xzf MG5_aMC_v<version>.tar.gz
+tb config set heptapod mg5_path "$(pwd)/MG5_aMC_v<version>"
 ```
 
 #### Pythia8 and Sherpa3 (`pythia`, `sherpa`, `pythia_cpp`, `sherpa_cpp`)
@@ -66,8 +67,8 @@ Sherpa is not installed by default in heptapod. We recommend building it yoursel
 **C++ against your own install.** Point heptapod at a build:
 
 ```bash
-tb config set heptapod pythia_path /path/to/pythia8317     # holds bin/pythia8-config
-tb config set heptapod sherpa_path /path/to/sherpa-3.0.2   # holds bin/Sherpa-config
+tb config set heptapod pythia_path /path/to/pythia8    # holds bin/pythia8-config
+tb config set heptapod sherpa_path /path/to/sherpa     # holds bin/Sherpa-config
 tb install . --bundle pythia_cpp --bundle sherpa_cpp        # no generator wheels at all
 ```
 

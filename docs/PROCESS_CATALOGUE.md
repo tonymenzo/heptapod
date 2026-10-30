@@ -47,7 +47,7 @@ The source archive is exported with Toolbase. On the destination machine:
 ```sh
 tb install heptapod-2.17.0.dev1.tar.gz --bundle processes --bundle process_validation
 tb config set heptapod base_directory /absolute/path/to/workspace
-tb config set heptapod mg5_path /absolute/path/to/MG5_aMC_v3.6.6
+tb config set heptapod mg5_path /absolute/path/to/MG5_aMC
 ```
 
 For enumeration alone, omit `--bundle process_validation`. The source manifest
