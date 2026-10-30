@@ -20,7 +20,13 @@ Install toolbase:
 pip install toolbase
 ```
 
-Download the packaged `heptapod-<version>.tar.gz` asset from [Releases](https://github.com/tonymenzo/heptapod/releases) (or [install directly from the cloned repo](#install-from-the-repository)), then install it, replacing the path below with your downloaded file:
+Download the packaged `heptapod-<version>.tar.gz` asset from [Releases](https://github.com/tonymenzo/heptapod/releases) (or [install directly from the cloned repo](#install-from-the-repository)), for example from the command line with `<version>` replaced by a release number:
+
+```bash
+curl -LO https://github.com/tonymenzo/heptapod/releases/download/v<version>/heptapod-<version>.tar.gz
+```
+
+Then install it, replacing the path below with your downloaded file:
 
 ```bash
 tb install "/path/to/heptapod-<version>.tar.gz"
