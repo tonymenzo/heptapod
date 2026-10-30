@@ -162,8 +162,8 @@ tb config set heptapod rivet_path /path/to/rivet
 **Your own Pythia 8 or Sherpa build** (`sherpa`, `pythia_cpp`, `sherpa_cpp`), the install prefixes holding `bin/pythia8-config` and `bin/Sherpa-config`; a C++ compiler must be on `PATH`. Note that Pythia is installed into the toolkit environment by default; Sherpa is not, although PyPI has a wheel for a few platforms (see the [Sherpa tools](tools/README.md#sherpafromruncardtool--sherpacppfromruncardtool)):
 
 ```bash
-tb config set heptapod pythia_path /path/to/pythia8317
-tb config set heptapod sherpa_path /path/to/sherpa-3.0.2
+tb config set heptapod pythia_path /path/to/pythia8
+tb config set heptapod sherpa_path /path/to/sherpa
 ```
 
 **Independent model review** (`reverse`) spawns a CLI agent of your choice rather than an external binary; configure it with `blank_agent_cmd` as described in [`tools/reverse/README.md`](tools/reverse/README.md#configuring-the-agent).
