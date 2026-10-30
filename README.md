@@ -20,11 +20,14 @@ Install toolbase:
 pip install toolbase
 ```
 
-Download the packaged `heptapod-<version>.tar.gz` asset from [Releases](https://github.com/tonymenzo/heptapod/releases) (or [install directly from the cloned repo](#install-from-the-repository)), then install it, replacing the path below with your downloaded file:
+Download the latest packaged release and install it:
 
 ```bash
-tb install "/path/to/heptapod-<version>.tar.gz"
+curl -LO https://github.com/tonymenzo/heptapod/releases/latest/download/heptapod.tar.gz
+tb install heptapod.tar.gz
 ```
+
+For a specific release, download `https://github.com/tonymenzo/heptapod/releases/download/v<version>/heptapod.tar.gz` instead; all releases are listed under [Releases](https://github.com/tonymenzo/heptapod/releases). You can also [install directly from the cloned repo](#install-from-the-repository).
 
 This installs all bundles and their Python dependencies. Bundles that need external software become available once their paths are set under [Configuration](#configuration).
 
@@ -113,7 +116,7 @@ Tools are grouped into bundles so you can install only what a workflow needs.
 For a smaller installation, select bundles from the same tarball with repeated `--bundle` flags:
 
 ```bash
-tb install "/path/to/heptapod-<version>.tar.gz" --bundle pdg --bundle nda
+tb install heptapod.tar.gz --bundle pdg --bundle nda
 ```
 
 You can run this command again with additional bundles to add their dependencies to an existing installation.
