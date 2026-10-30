@@ -20,11 +20,14 @@ Install toolbase:
 pip install toolbase
 ```
 
-Download the packaged `heptapod-<version>.tar.gz` asset from [Releases](https://github.com/tonymenzo/heptapod/releases) (or [install directly from the cloned repo](#install-from-the-repository)), then install it, replacing the path below with your downloaded file:
+Download the packaged release and install it:
 
 ```bash
-tb install "/path/to/heptapod-<version>.tar.gz"
+curl -LO https://github.com/tonymenzo/heptapod/releases/download/v3.3.2/heptapod-3.3.2.tar.gz
+tb install heptapod-3.3.2.tar.gz
 ```
+
+Earlier versions are listed under [Releases](https://github.com/tonymenzo/heptapod/releases), and you can also [install directly from the cloned repo](#install-from-the-repository). If a browser download arrives unpacked as `heptapod-<version>.tar`, run `gzip` on it first: `tb install` reads only `.tar.gz` files.
 
 This installs all bundles and their Python dependencies. Bundles that need external software become available once their paths are set under [Configuration](#configuration).
 
@@ -113,7 +116,7 @@ Tools are grouped into bundles so you can install only what a workflow needs.
 For a smaller installation, select bundles from the same tarball with repeated `--bundle` flags:
 
 ```bash
-tb install "/path/to/heptapod-<version>.tar.gz" --bundle pdg --bundle nda
+tb install heptapod-3.3.2.tar.gz --bundle pdg --bundle nda
 ```
 
 You can run this command again with additional bundles to add their dependencies to an existing installation.
@@ -186,7 +189,8 @@ Installed toolkits and their environments are stored in `~/.toolbase/cache/<name
 To install a specific release and select it for your current project, replace `<version>` below with the release version:
 
 ```bash
-tb install "/path/to/heptapod-<version>.tar.gz"
+curl -LO https://github.com/tonymenzo/heptapod/releases/download/v<version>/heptapod-<version>.tar.gz
+tb install heptapod-<version>.tar.gz
 tb use "heptapod@<version>"
 ```
 
