@@ -16,6 +16,7 @@ background task.
 Layout (all under ``<base_directory>/.jobs/<job_id>/``):
     spec.json    what to run (tool, args, state config)     [written once]
     status.json  queued -> running -> done | failed | cancelled   [atomic]
+                 (queued with a pid: the runner is waiting for a job slot)
     log.txt      runner stdout/stderr (tool prints, tracebacks)
     result.json  the tool's verbatim output string, once finished
 
@@ -84,6 +85,45 @@ TERMINAL_STATES = ("done", "failed", "cancelled")
 QUEUED_GRACE_SECONDS = 60
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+
+# Jobs that may run at once on this machine, across every server and
+# base_directory. Each runner holds an flock on one slot file while its tool
+# runs; the kernel drops the lock when the runner dies, however it dies, so a
+# crashed job never leaks a slot. Without a cap, a burst of submissions starts
+# every job at once and can exhaust the machine's memory.
+DEFAULT_MAX_JOBS = 4
+SLOT_POLL_SECONDS = 2.0
+
+
+def max_jobs() -> int:
+    try:
+        return max(1, int(os.environ.get("HEPTAPOD_MAX_JOBS", DEFAULT_MAX_JOBS)))
+    except ValueError:
+        return DEFAULT_MAX_JOBS
+
+
+def slots_dir() -> str:
+    return os.environ.get("HEPTAPOD_JOB_SLOTS_DIR") or os.path.join(
+        os.path.expanduser("~"), ".cache", "heptapod", "job-slots")
+
+
+def try_acquire_slot() -> Optional[Any]:
+    """An open, flocked slot file, or None when all slots are taken.
+
+    Keep the returned file object alive for as long as the job runs.
+    """
+    import fcntl
+
+    d = slots_dir()
+    os.makedirs(d, exist_ok=True)
+    for i in range(max_jobs()):
+        fh = open(os.path.join(d, f"slot-{i}.lock"), "a")
+        try:
+            fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return fh
+        except OSError:
+            fh.close()
+    return None
 
 
 def _utcnow_iso() -> str:
@@ -255,6 +295,9 @@ def effective_status(jdir: str) -> Dict[str, Any]:
     if state == "running" and not pid_alive(st.get("pid")):
         st["state"] = "failed"
         st["error"] = "runner process died before finishing (stale job)"
+    elif state == "queued" and st.get("pid") and not pid_alive(st.get("pid")):
+        st["state"] = "failed"
+        st["error"] = "runner died while waiting for a job slot (stale job)"
     elif state == "queued" and not st.get("pid"):
         age = _age_seconds(st.get("submitted"))
         if age is not None and age > QUEUED_GRACE_SECONDS:

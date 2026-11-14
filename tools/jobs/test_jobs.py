@@ -44,6 +44,10 @@ from orchestral.tools.base.field_utils import RuntimeField, StateField  # noqa: 
 
 _TMPDIRS = []
 
+# Tests take job slots from a private directory, never the machine's.
+os.environ["HEPTAPOD_JOB_SLOTS_DIR"] = tempfile.mkdtemp(prefix="jobs_slots_")
+_TMPDIRS.append(os.environ["HEPTAPOD_JOB_SLOTS_DIR"])
+
 
 def _base() -> str:
     d = tempfile.mkdtemp(prefix="jobs_test_")
@@ -442,6 +446,69 @@ def test_runner_rejects_tampered_spec() -> bool:
     return ok
 
 
+def _state(base: str, jid: str) -> str:
+    return jm.effective_status(jm.job_dir(base, jid)).get("state")
+
+
+def test_slot_cap_queues_extra_jobs() -> bool:
+    """With one slot, a second job waits queued until the first finishes."""
+    base = _base()
+    old = os.environ.get("HEPTAPOD_MAX_JOBS")
+    os.environ["HEPTAPOD_MAX_JOBS"] = "1"
+    try:
+        a, _, _ = _launch_sleep_job(base, seconds=3)
+        time.sleep(1.5)
+        b, _, _ = _launch_sleep_job(base, seconds=1)
+        time.sleep(1.5)
+        a_running, b_queued = _state(base, a) == "running", _state(base, b) == "queued"
+        b_final = _wait(base, b, seconds=20).get("state")
+        a_final = _state(base, a)
+    finally:
+        if old is None:
+            os.environ.pop("HEPTAPOD_MAX_JOBS", None)
+        else:
+            os.environ["HEPTAPOD_MAX_JOBS"] = old
+    ok = a_running and b_queued and a_final == "done" and b_final == "done"
+    print(f"[{'✓' if ok else '✗'}] test_slot_cap_queues_extra_jobs "
+          f"(a_running={a_running}, b_queued={b_queued}, a={a_final}, b={b_final})")
+    return ok
+
+
+def test_cancel_job_waiting_for_slot() -> bool:
+    """A job waiting for a slot can be cancelled and never runs its tool."""
+    base = _base()
+    old = os.environ.get("HEPTAPOD_MAX_JOBS")
+    os.environ["HEPTAPOD_MAX_JOBS"] = "1"
+    try:
+        a, _, _ = _launch_sleep_job(base, seconds=4)
+        time.sleep(1.5)
+        b, b_pid_file, _ = _launch_sleep_job(base, seconds=30)
+        time.sleep(1.5)
+        res = jm.cancel(base, b)
+        _wait(base, a, seconds=20)
+    finally:
+        if old is None:
+            os.environ.pop("HEPTAPOD_MAX_JOBS", None)
+        else:
+            os.environ["HEPTAPOD_MAX_JOBS"] = old
+    ok = res.get("state") == "cancelled" and not os.path.exists(b_pid_file)
+    print(f"[{'✓' if ok else '✗'}] test_cancel_job_waiting_for_slot ({res})")
+    return ok
+
+
+def test_mg5_card_core_cap() -> bool:
+    """An MG5 card without nb_core or run_mode gets one; others are left alone."""
+    from tools.mg5.mg5 import _cap_cores
+    plain = "import model sm\ngenerate p p > z\noutput x\nlaunch\n"
+    capped = _cap_cores(plain)
+    own = "set nb_core 2\n" + plain
+    serial = "set run_mode 0\n" + plain
+    ok = (capped.startswith("set nb_core 4\n") and capped.endswith(plain)
+          and _cap_cores(own) == own and _cap_cores(serial) == serial)
+    print(f"[{'✓' if ok else '✗'}] test_mg5_card_core_cap")
+    return ok
+
+
 TESTS = [
     test_job_id_format,
     test_validate_args_against_real_tool,
@@ -460,6 +527,9 @@ TESTS = [
     test_cancel_stops_job_and_children,
     test_cancel_queued_job_never_runs,
     test_watchdog_stops_job_and_children,
+    test_slot_cap_queues_extra_jobs,
+    test_cancel_job_waiting_for_slot,
+    test_mg5_card_core_cap,
 ]
 
 
