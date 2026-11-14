@@ -601,6 +601,26 @@ def _relaunch_card(card_text: str, process_dir: str, *, nevents: Optional[int] =
     return f"launch {process_dir}\n" + text
 
 
+def _default_nb_core() -> int:
+    """Cores an MG5 run may use unless its card says otherwise.
+
+    MG5 defaults to every core, so a few runs at once oversubscribe the
+    machine many times over. HEPTAPOD_MG5_NB_CORE overrides the default of 4.
+    """
+    try:
+        return max(1, int(os.environ.get("HEPTAPOD_MG5_NB_CORE", "4")))
+    except ValueError:
+        return 4
+
+
+def _cap_cores(card_text: str) -> str:
+    """Prepend 'set nb_core N' to a card that sets neither nb_core nor run_mode."""
+    stripped = [l.strip() for l in card_text.splitlines()]
+    if any(l.startswith(("set nb_core", "set run_mode")) for l in stripped):
+        return card_text
+    return f"set nb_core {_default_nb_core()}\n" + card_text
+
+
 # ====================================================================== #
 # ========================= MG5_aMC@NLO tool =========================== #
 # ====================================================================== #
@@ -747,6 +767,8 @@ class MadGraphFromRunCardTool(BaseTool):
                 reason=str(e),
                 suggestion="Check template card format"
             )
+
+        card_text = _cap_cores(card_text)
 
         # Write modified card
         try:

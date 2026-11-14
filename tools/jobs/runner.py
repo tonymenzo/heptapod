@@ -25,6 +25,11 @@ It derives from BaseException so the tools' ``except Exception`` blocks let it
 through, and subprocess.run / communicate kill their child on the way out.
 The runner then records the outcome and SIGKILLs whatever is left of the group.
 
+Job slots. Before the tool starts, the runner takes one of HEPTAPOD_MAX_JOBS
+machine-wide slots (default 4; see job_manager.try_acquire_slot) and waits,
+still queued, until one is free. The slot is an flock, released when the
+runner exits or dies.
+
 Progress. The runner installs itself as the tool's ``_stream_callback``, so a
 tool's ``report_progress(...)`` calls (tools/jobs/progress.py) land in
 status.json, throttled, where jobstatus renders them as a progress bar.
@@ -42,10 +47,13 @@ from datetime import datetime, timezone
 
 from tools.jobs.job_manager import (
     RESULT_SCHEMA,
+    SLOT_POLL_SECONDS,
     WHITELIST,
+    max_jobs,
     read_json,
     resolve_tool,
     set_status,
+    try_acquire_slot,
     write_json_atomic,
 )
 
@@ -175,6 +183,10 @@ def _start_watchdog(finish: _Finish, max_seconds: float) -> None:
     t.start()
 
 
+def _cancelled(jdir: str) -> bool:
+    return (read_json(os.path.join(jdir, "status.json")) or {}).get("state") == "cancelled"
+
+
 def main(jdir: str) -> int:
     spec = read_json(os.path.join(jdir, "spec.json"))
     if not spec or spec.get("tool") not in WHITELIST:
@@ -183,20 +195,37 @@ def main(jdir: str) -> int:
         return 2
 
     # A job cancelled while it was still queued never starts.
-    if (read_json(os.path.join(jdir, "status.json")) or {}).get("state") == "cancelled":
+    if _cancelled(jdir):
         return 0
 
     job_id, tool_name = spec["job_id"], spec["tool"]
     finish = _Finish(jdir)
-    finish.status(state="running", pid=os.getpid(), started=_now())
 
     def _on_sigterm(signum, frame):
         # Once an outcome is being written, let it finish.
         if not finish.claimed:
             raise JobTerminated()
 
+    signal.signal(signal.SIGTERM, _on_sigterm)
     progress = _Progress(finish)
+    slot = None
     try:
+        # Wait for a machine-wide job slot. The pid goes in first, so the job
+        # reads as alive and canceljob can signal it while it waits.
+        slot = try_acquire_slot()
+        if slot is None:
+            finish.status(pid=os.getpid(), progress={
+                "message": f"waiting for a job slot ({max_jobs()} run at once)",
+                "updated": _now()})
+            while slot is None:
+                if _cancelled(jdir):
+                    return 0
+                time.sleep(SLOT_POLL_SECONDS)
+                slot = try_acquire_slot()
+        if _cancelled(jdir):
+            return 0
+        finish.status(state="running", pid=os.getpid(), started=_now(), progress=None)
+
         cls = resolve_tool(tool_name)
         state = spec.get("state") or {}
         kwargs = {k: v for k, v in state.items() if k in cls.model_fields}
@@ -222,7 +251,6 @@ def main(jdir: str) -> int:
         tool = cls(**kwargs)
         tool._stream_callback = progress
 
-        signal.signal(signal.SIGTERM, _on_sigterm)
         if spec.get("max_seconds"):
             _start_watchdog(finish, float(spec["max_seconds"]))
 
@@ -273,6 +301,9 @@ def main(jdir: str) -> int:
         _audit(spec, "error", f"{tool_name} job {job_id} crashed",
                {"job_id": job_id, "tool": tool_name, "error": str(e)[:300]})
         return 1
+    finally:
+        if slot is not None:
+            slot.close()
 
 
 if __name__ == "__main__":
